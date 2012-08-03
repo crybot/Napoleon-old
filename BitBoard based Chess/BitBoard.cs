@@ -12,7 +12,7 @@ namespace BitBoard_based_Chess
     {
         private UInt64 value;
 
-        internal BitBoard(UInt64 board)
+        private BitBoard(UInt64 board)
         {
             this.value = board;
         }
@@ -26,14 +26,12 @@ namespace BitBoard_based_Chess
             return board.value;
         }
 
-        internal static BitBoard SquareMask(int square)
-        {
-            return (UInt64)1 << square;
-        }
         internal static BitBoard ToBitBoard(int toConvert)
         {
             return (UInt64)toConvert;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static Int32 ToInt32(BitBoard bitBoard)
         {
             return (Int32)bitBoard.value;
@@ -101,6 +99,53 @@ namespace BitBoard_based_Chess
             int bitIndex = Constants.DeBrujinTable[((ulong)((long)bitBoard.value & -(long)bitBoard.value) * Constants.DeBrujinValue) >> 58];
             bitBoard.value &= bitBoard.value - 1;
             return bitIndex;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsAttacked(BitBoard target, PieceColor side, Board board)
+        {
+            BitBoard slidingAttackers;
+            BitBoard pawnAttacks;
+            BitBoard allPieces = board.GetAllPieces();
+            PieceColor enemy = side.GetOpposite();
+            int to;
+
+            while (target != 0)
+            {
+                to = BitBoard.BitScanForward(target);
+                pawnAttacks = side == PieceColor.White ? MovePackHelper.WhitePawnAttacks[to] : MovePackHelper.BlackPawnAttacks[to];
+
+                if ((board.GetPieceSet(enemy, PieceType.Pawn) & pawnAttacks) != 0)
+                    return true;
+                if ((board.GetPieceSet(enemy, PieceType.Knight) & MovePackHelper.KnightAttacks[to]) != 0) return true;
+                if ((board.GetPieceSet(enemy, PieceType.King) & MovePackHelper.KingAttacks[to]) != 0) return true;
+
+                // file / rank attacks
+                slidingAttackers = board.GetPieceSet(enemy, PieceType.Queen) | board.GetPieceSet(enemy, PieceType.Rook);
+
+                if (slidingAttackers != 0)
+                {
+                    if ((MovePackHelper.GetRankAttacks(allPieces, to) & slidingAttackers) != 0)
+                        return true;
+                    if ((MovePackHelper.GetFileAttacks(allPieces, to) & slidingAttackers) != 0)
+                        return true;
+                }
+
+                // diagonals
+                slidingAttackers = board.GetPieceSet(enemy, PieceType.Queen) | board.GetPieceSet(enemy, PieceType.Bishop);
+
+                if (slidingAttackers != 0)
+                {
+                    if ((MovePackHelper.GetH1A8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0)
+                        return true;
+                    if ((MovePackHelper.GetA1H8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0)
+                        return true;
+                }
+
+                target.value &= target.value - 1;
+            }
+
+            return false;
         }
     }
 }

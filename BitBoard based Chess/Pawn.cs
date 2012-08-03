@@ -31,39 +31,18 @@ namespace BitBoard_based_Chess
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BitBoard GetSinglePushTargets(PieceColor color, BitBoard pawns, BitBoard empty)
         {
-            switch (color)
-            {
-                case PieceColor.White:
-                    {
-                        return CompassRose.OneStepNorth(pawns) & empty;
-                    }
-                case PieceColor.Black:
-                    {
-                        return CompassRose.OneStepSouth(pawns) & empty;
-                    }
-                default:
-                    throw new NotImplementedException();
-            }
+            return color == PieceColor.White ? CompassRose.OneStepNorth(pawns) & empty : CompassRose.OneStepSouth(pawns) & empty;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BitBoard GetDoublePushTargets(PieceColor color, BitBoard pawns, BitBoard empty)
         {
-            switch (color)
-            {
-                case PieceColor.White:
-                    {
-                        BitBoard singlePush = GetSinglePushTargets(color, pawns, empty);
-                        return CompassRose.OneStepNorth(singlePush) & empty & Constants.Ranks.Four;
-                    }
-                case PieceColor.Black:
-                    {
-                        BitBoard singlePush = GetSinglePushTargets(color, pawns, empty);
-                        return CompassRose.OneStepSouth(singlePush) & empty & Constants.Ranks.Five;
-                    }
-                default:
-                    throw new NotImplementedException();
-            }
+            BitBoard singlePush = GetSinglePushTargets(color, pawns, empty);
+
+            return color == PieceColor.White 
+                ? CompassRose.OneStepNorth(singlePush) & empty & Constants.Ranks.Four
+                : CompassRose.OneStepSouth(singlePush) & empty & Constants.Ranks.Five;
+
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -103,29 +82,13 @@ namespace BitBoard_based_Chess
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BitBoard GetEastAttacks(PieceColor color, BitBoard pawns)
         {
-            switch (color)
-            {
-                case PieceColor.White:
-                    return CompassRose.OneStepNorthEast(pawns);
-                case PieceColor.Black:
-                    return CompassRose.OneStepSouthEast(pawns);
-                default:
-                    throw new NotImplementedException();
-            }
+            return color == PieceColor.White ? CompassRose.OneStepNorthEast(pawns) : CompassRose.OneStepSouthEast(pawns);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BitBoard GetWestAttacks(PieceColor color, BitBoard pawns)
         {
-            switch (color)
-            {
-                case PieceColor.White:
-                    return CompassRose.OneStepNorthWest(pawns);
-                case PieceColor.Black:
-                    return CompassRose.OneStepSouthWest(pawns);
-                default:
-                    throw new NotImplementedException();
-            }
+            return color == PieceColor.White ? CompassRose.OneStepNorthWest(pawns) : CompassRose.OneStepSouthWest(pawns);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

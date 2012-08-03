@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace BitBoard_based_Chess
 {
@@ -23,7 +24,8 @@ namespace BitBoard_based_Chess
         private static Square toSquare;
         private static int fromIndex;
         private static int toIndex;
-        
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static List<Move> ExtractMoves(PieceColor color, PieceType type, BitBoard pieces, Board board, GetTargetsDelegate getTargets)
         {
             moveList.Clear();
@@ -32,7 +34,7 @@ namespace BitBoard_based_Chess
             {
                 fromIndex = BitBoard.BitScanForwardReset(ref pieces); // search for LS1B and then reset it
                 fromSquare = new Square(fromIndex);
-                targets = getTargets.Invoke(color, BitBoard.SquareMask(fromIndex), board);
+                targets = getTargets.Invoke(color, Constants.SquareMask[fromIndex], board);
 
                 while (targets != 0)
                 {

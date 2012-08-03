@@ -92,11 +92,11 @@ namespace BitBoard_based_Chess
             {
                 if (pieceSet[i].PieceColor == PieceColor.White)
                 {
-                    whiteBitBoardSet[pieceSet[i].PieceType] |= BitBoard.SquareMask(i);
+                    whiteBitBoardSet[pieceSet[i].PieceType] |= Constants.SquareMask[i];
                 }
                 else if (pieceSet[i].PieceColor == PieceColor.Black)
                 {
-                    blackBitBoardSet[pieceSet[i].PieceType] |= BitBoard.SquareMask(i);
+                    blackBitBoardSet[pieceSet[i].PieceType] |= Constants.SquareMask[i];
                 }
             }
             #endregion
@@ -107,47 +107,19 @@ namespace BitBoard_based_Chess
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal BitBoard GetPieceSet(PieceColor pieceColor, PieceType pieceType)
         {
-            switch (pieceColor)
-            {
-                case PieceColor.White:
-                    {
-                        return whiteBitBoardSet[pieceType];
-                    }
-                case PieceColor.Black:
-                    {
-                        return blackBitBoardSet[pieceType];
-                    }
-                default:
-                    throw new NotImplementedException();
-            }
+            return pieceColor == PieceColor.White ? whiteBitBoardSet[pieceType] : blackBitBoardSet[pieceType];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal BitBoard GetPlayerPieces(PieceColor color)
         {
-            switch (color)
-            {
-                case PieceColor.White:
-                    return this.whitePieces;
-                case PieceColor.Black:
-                    return this.blackPieces;
-                default:
-                    throw new NotImplementedException();
-            }
+            return color == PieceColor.White ? this.whitePieces : this.blackPieces;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal BitBoard GetEnemyPieces(PieceColor color)
         {
-            switch (color)
-            {
-                case PieceColor.White:
-                    return this.blackPieces;
-                case PieceColor.Black:
-                    return this.whitePieces;
-                default:
-                    throw new NotImplementedException();
-            }
+            return color == PieceColor.White ? this.blackPieces : this.whitePieces;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -178,67 +150,6 @@ namespace BitBoard_based_Chess
             this.emptySquares = ~allPieces;
         }
 
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal bool isAttacked(BitBoard target, PieceColor side)
-        {
-            BitBoard slidingAttackers;
-            BitBoard pawnAttacks;
-            BitBoard allPieces = this.GetAllPieces();
-            PieceColor enemy = side.GetOpposite();
-
-            int to, rank, file, diag, antiDiag, occupancy;
-
-            while (target != 0)
-            {
-                to = BitBoard.BitScanForward(target);
-                rank = Square.GetRankIndex(to);
-                file = Square.GetFileIndex(to);
-                diag = Square.GetDiagonalIndex(file,rank);
-                antiDiag = Square.GetAntiDiagonalIndex(file, rank);
-                pawnAttacks = side == PieceColor.White ? MovePackHelper.WhitePawnAttacks[to] : MovePackHelper.BlackPawnAttacks[to];
-
-                if ((this.GetPieceSet(enemy, PieceType.Pawn) & pawnAttacks) != 0)
-                    return true;
-                if ((this.GetPieceSet(enemy, PieceType.Knight) & MovePackHelper.KnightAttacks[to]) != 0) return true;
-                if ((this.GetPieceSet(enemy, PieceType.King) & MovePackHelper.KingAttacks[to]) != 0) return true;
-
-                // file / rank attacks
-                slidingAttackers = this.GetPieceSet(enemy, PieceType.Queen) | this.GetPieceSet(enemy, PieceType.Rook);
-
-                if (slidingAttackers != 0)
-                {
-                    occupancy = BitBoard.ToInt32((allPieces & Constants.SixBitRankMask[rank]) >> (8 * rank));
-                    if ((MovePackHelper.RankAttacks[to, (occupancy >> 1) & 63] & slidingAttackers) != 0)
-                        return true;
-
-                    occupancy = BitBoard.ToInt32((allPieces & Constants.SixBitFileMask[file]) * Constants.FileMagic[file] >> 57);
-                    if ((MovePackHelper.FileAttacks[to, occupancy] & slidingAttackers) != 0)
-                        return true;
-                }
-
-                // diagonals
-                slidingAttackers = this.GetPieceSet(enemy, PieceType.Queen) | this.GetPieceSet(enemy, PieceType.Bishop);
-
-                if (slidingAttackers != 0)
-                {
-                    occupancy = BitBoard.ToInt32((allPieces & Constants.AntiDiagonalMask[antiDiag]) * Constants.AntiDiagonalMagic[antiDiag] >> 56);
-                    if ((MovePackHelper.AntiDiagonalAttacks[to, (occupancy >> 1) & 63] & slidingAttackers) != 0)
-                        return true;
-
-                    occupancy = BitBoard.ToInt32((allPieces & Constants.DiagonalMask[diag]) * Constants.DiagonalMagic[diag] >> 56);
-                    if ((MovePackHelper.DiagonalAttacks[to, (occupancy >> 1) & 63] & slidingAttackers) != 0)
-                        return true;
-                }
-
-                target &= target - 1;
-            }
-
-            return false;
-        }
-
-
-
     }
+
 }

@@ -20,7 +20,7 @@ namespace BitBoard_based_Chess
             0x0804020100804020, 0x0402010080402010, 0x0201008040201008, 0x0100804020100804 
         };
 
-        internal static readonly UInt64[] DiagonalMagic = 
+        internal static readonly UInt64[] A1H8DiagonalMagic = 
         { 
             0x0000000000000000, 0x0000000000000000, 0x0808080000000000, 0x1010101000000000,
             0x2020202020000000, 0x4040404040400000, 0x8080808080808000, 0x0101010101010100,
@@ -28,7 +28,7 @@ namespace BitBoard_based_Chess
             0x0101010101010100, 0x0000000000000000, 0x0000000000000000 
         };
 
-        internal static readonly UInt64[] AntiDiagonalMagic =
+        internal static readonly UInt64[] H1A8DiagonalMagic =
         {
             0x0000000000000000, 0x0000000000000000, 0x0101010101010100, 0x0101010101010100,
             0x0101010101010100, 0x0101010101010100, 0x0101010101010100, 0x0101010101010100,
@@ -46,6 +46,18 @@ namespace BitBoard_based_Chess
         /// per ottenere i gradi di occupazione a 6 bit di tali pezzi
         /// </summary>
 
+        internal static readonly UInt64[] SquareMask = 
+        {
+            Squares.A1, Squares.B1, Squares.C1, Squares.D1, Squares.E1, Squares.F1, Squares.G1, Squares.H1,
+            Squares.A2, Squares.B2, Squares.C2, Squares.D2, Squares.E2, Squares.F2, Squares.G2, Squares.H2,
+            Squares.A3, Squares.B3, Squares.C3, Squares.D3, Squares.E3, Squares.F3, Squares.G3, Squares.H3,
+            Squares.A4, Squares.B4, Squares.C4, Squares.D4, Squares.E4, Squares.F4, Squares.G4, Squares.H4,
+            Squares.A5, Squares.B5, Squares.C5, Squares.D5, Squares.E5, Squares.F5, Squares.G5, Squares.H5,
+            Squares.A6, Squares.B6, Squares.C6, Squares.D6, Squares.E6, Squares.F6, Squares.G6, Squares.H6,
+            Squares.A7, Squares.B7, Squares.C7, Squares.D7, Squares.E7, Squares.F7, Squares.G7, Squares.H7,
+            Squares.A8, Squares.B8, Squares.C8, Squares.D8, Squares.E8, Squares.F8, Squares.G8, Squares.H8,
+        };
+
         internal static readonly UInt64[] SixBitRankMask = 
         { 
             0x000000000000007E, 0x0000000000007E00, 0x00000000007E0000,
@@ -60,7 +72,7 @@ namespace BitBoard_based_Chess
             0x0040404040404000, 0x0080808080808000 
         };
 
-        internal static readonly UInt64[] DiagonalMask = 
+        internal static readonly UInt64[] A1H8DiagonalMask = 
         { 
             0x0000000000000080, 0x0000000000008040, 0x0000000000804020, 0x0000000080402010,
             0x0000008040201008, 0x0000804020100804, 0x0080402010080402, 0x8040201008040201,
@@ -68,7 +80,7 @@ namespace BitBoard_based_Chess
             0x0402010000000000, 0x0201000000000000, 0x0100000000000000
         };
 
-        internal static readonly UInt64[] AntiDiagonalMask =
+        internal static readonly UInt64[] H1A8DiagonalMask =
         { 
             0x0000000000000001, 0x0000000000000102, 0x0000000000010204, 0x0000000001020408,
             0x0000000102040810, 0x0000010204081020, 0x0001020408102040, 0x0102040810204080,

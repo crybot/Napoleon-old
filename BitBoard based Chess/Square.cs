@@ -69,32 +69,36 @@ namespace BitBoard_based_Chess
             return base.GetHashCode();
         }
 
-        internal static int GetDiagonalIndex(int file, int rank)
+        internal static int GetA1H8DiagonalIndex(int file, int rank)
         {
             return 7 + rank - file;
         }
-        internal static int GetDiagonalIndex(int squareIndex)
+        internal static int GetA1H8DiagonalIndex(int squareIndex)
         {
             return 7 + GetRankIndex(squareIndex) - GetFileIndex(squareIndex);
         }
 
-        internal static int GetAntiDiagonalIndex(int file, int rank)
+        internal static int GetH1A8AntiDiagonalIndex(int file, int rank)
         {
             return rank + file;
         }
-        internal static int GetAntiDiagonalIndex(int squareIndex)
+        internal static int GetH1A8AntiDiagonalIndex(int squareIndex)
         {
             return GetRankIndex(squareIndex) + GetFileIndex(squareIndex);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetFileIndex(int squareIndex)
         {
             return squareIndex % 8;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetRankIndex(int squareIndex)
         {
             return squareIndex / 8;
         }
+
         internal static int GetSquareIndex(int file, int rank)
         {
             return file + 8 * rank;

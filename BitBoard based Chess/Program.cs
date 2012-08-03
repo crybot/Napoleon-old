@@ -46,22 +46,22 @@ namespace BitBoard_based_Chess
 
             for (i = 0; i < moves.Count; i++)
             {
-                square = BitBoard.SquareMask(i);
-                for (k = 0; k < moves.Count; k++)
+                square = Constants.SquareMask[i];
+                for (k = 0; k < 18; k++)
                 {
-                    for (l = 0; l < moves.Count; l++)
+                    for (l = 0; l < 18; l++)
                     {
-                        for (m = 0; m < moves.Count; m++)
+                        for (m = 0; m < 18; m++)
                         {
-                            for (n = 0; n < moves.Count; n++)
+                            for (n = 0; n < 18; n++)
                             {
-
-                                for (p = 0; p < moves.Count; p++)
+                                MoveGenerator.GetAllMoves(PieceColor.White, board);
+                                for (p = 0; p < 18; p++)
                                 {
-                                    if (board.isAttacked(square, PieceColor.Black))
-                                    {
+                                    //if (BitBoard.IsAttacked(square, PieceColor.Black, board))
+                                    //{
 
-                                    }
+                                    //}
                                 }
                             }
                         }

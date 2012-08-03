@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace BitBoard_based_Chess
 {
@@ -27,14 +28,11 @@ namespace BitBoard_based_Chess
                     return ' ';
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static PieceColor GetOpposite(this PieceColor color)
         {
-            if (color == PieceColor.White)
-                return PieceColor.Black;
-            if (color == PieceColor.Black)
-                return PieceColor.White;
-            else
-                return PieceColor.None;
+            return color == PieceColor.White ? PieceColor.Black : PieceColor.White;
         }
     }
 }
