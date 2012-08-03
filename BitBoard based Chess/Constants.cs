@@ -200,15 +200,15 @@ namespace BitBoard_based_Chess
             internal const UInt64 WhiteKnights = 0x0000000000000042;
             internal const UInt64 WhiteBishops = 0x0000000000000024;
             internal const UInt64 WhiteRooks = 0x0000000000000081;
-            internal const UInt64 WhiteQueen = 0x0000000000000010;
-            internal const UInt64 WhiteKing = 0x0000000000000008;
+            internal const UInt64 WhiteQueen = 0x0000000000000008;
+            internal const UInt64 WhiteKing = 0x0000000000000010;
 
             internal const UInt64 BlackPawns = 0x00FF000000000000;
             internal const UInt64 BlackKnights = 0x4200000000000000;
             internal const UInt64 BlackBishops = 0x2400000000000000;
             internal const UInt64 BlackRooks = 0x8100000000000000;
-            internal const UInt64 BlackQueen = 0x1000000000000000;
-            internal const UInt64 BlackKing = 0x0800000000000000;
+            internal const UInt64 BlackQueen = 0x0800000000000000;
+            internal const UInt64 BlackKing = 0x1000000000000000;
 
         }
 

@@ -31,11 +31,11 @@ namespace BitBoard_based_Chess
                 diag = Square.GetDiagonalIndex(file, rank);
                 antiDiag = Square.GetAntiDiagonalIndex(file, rank);
 
-                occupancy = BitBoard.ToInt32((occupiedSquares & Constants.DiagonalMask[diag]) * Constants.DiagonalMagic[diag] >> 57);
-                targets |= MovePackHelper.DiagonalAttacks[square, occupancy];
+                occupancy = BitBoard.ToInt32((occupiedSquares & Constants.DiagonalMask[diag]) * Constants.DiagonalMagic[diag] >> 56);
+                targets |= MovePackHelper.DiagonalAttacks[square, (occupancy >> 1) & 63];
 
-                occupancy = BitBoard.ToInt32((occupiedSquares & Constants.AntiDiagonalMask[antiDiag]) * Constants.AntiDiagonalMagic[antiDiag] >> 57);
-                targets |= MovePackHelper.AntiDiagonalAttacks[square, occupancy];
+                occupancy = BitBoard.ToInt32((occupiedSquares & Constants.AntiDiagonalMask[antiDiag]) * Constants.AntiDiagonalMagic[antiDiag] >> 56);
+                targets |= MovePackHelper.AntiDiagonalAttacks[square, (occupancy >> 1) & 63];
             }
 
             return targets & ~board.GetPlayerPieces(pieceColor);

@@ -26,7 +26,7 @@ namespace BitBoard_based_Chess
         #endregion
 
         internal Board()
-        {      
+        {
             MovePackHelper.InitAttacks(); //inizializza i vari array di attacchi precalcolati per la generazione delle mosse
 
             whiteBitBoardSet.Add(PieceType.Pawn, Constants.Empty);
@@ -177,5 +177,68 @@ namespace BitBoard_based_Chess
             this.allPieces = whitePieces | blackPieces;
             this.emptySquares = ~allPieces;
         }
+
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal bool isAttacked(BitBoard target, PieceColor side)
+        {
+            BitBoard slidingAttackers;
+            BitBoard pawnAttacks;
+            BitBoard allPieces = this.GetAllPieces();
+            PieceColor enemy = side.GetOpposite();
+
+            int to, rank, file, diag, antiDiag, occupancy;
+
+            while (target != 0)
+            {
+                to = BitBoard.BitScanForward(target);
+                rank = Square.GetRankIndex(to);
+                file = Square.GetFileIndex(to);
+                diag = Square.GetDiagonalIndex(file,rank);
+                antiDiag = Square.GetAntiDiagonalIndex(file, rank);
+                pawnAttacks = side == PieceColor.White ? MovePackHelper.WhitePawnAttacks[to] : MovePackHelper.BlackPawnAttacks[to];
+
+                if ((this.GetPieceSet(enemy, PieceType.Pawn) & pawnAttacks) != 0)
+                    return true;
+                if ((this.GetPieceSet(enemy, PieceType.Knight) & MovePackHelper.KnightAttacks[to]) != 0) return true;
+                if ((this.GetPieceSet(enemy, PieceType.King) & MovePackHelper.KingAttacks[to]) != 0) return true;
+
+                // file / rank attacks
+                slidingAttackers = this.GetPieceSet(enemy, PieceType.Queen) | this.GetPieceSet(enemy, PieceType.Rook);
+
+                if (slidingAttackers != 0)
+                {
+                    occupancy = BitBoard.ToInt32((allPieces & Constants.SixBitRankMask[rank]) >> (8 * rank));
+                    if ((MovePackHelper.RankAttacks[to, (occupancy >> 1) & 63] & slidingAttackers) != 0)
+                        return true;
+
+                    occupancy = BitBoard.ToInt32((allPieces & Constants.SixBitFileMask[file]) * Constants.FileMagic[file] >> 57);
+                    if ((MovePackHelper.FileAttacks[to, occupancy] & slidingAttackers) != 0)
+                        return true;
+                }
+
+                // diagonals
+                slidingAttackers = this.GetPieceSet(enemy, PieceType.Queen) | this.GetPieceSet(enemy, PieceType.Bishop);
+
+                if (slidingAttackers != 0)
+                {
+                    occupancy = BitBoard.ToInt32((allPieces & Constants.AntiDiagonalMask[antiDiag]) * Constants.AntiDiagonalMagic[antiDiag] >> 56);
+                    if ((MovePackHelper.AntiDiagonalAttacks[to, (occupancy >> 1) & 63] & slidingAttackers) != 0)
+                        return true;
+
+                    occupancy = BitBoard.ToInt32((allPieces & Constants.DiagonalMask[diag]) * Constants.DiagonalMagic[diag] >> 56);
+                    if ((MovePackHelper.DiagonalAttacks[to, (occupancy >> 1) & 63] & slidingAttackers) != 0)
+                        return true;
+                }
+
+                target &= target - 1;
+            }
+
+            return false;
+        }
+
+
+
     }
 }

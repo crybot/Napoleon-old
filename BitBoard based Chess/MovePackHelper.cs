@@ -12,6 +12,8 @@ namespace BitBoard_based_Chess
         /// verra` invece usato il tipo nativo UInt64, alias del tipo ulong
         /// </summary>
 
+        internal static readonly UInt64[] WhitePawnAttacks = new UInt64[64]; // square
+        internal static readonly UInt64[] BlackPawnAttacks = new UInt64[64]; // square
         internal static readonly UInt64[] KingAttacks = new UInt64[64]; // square
         internal static readonly UInt64[] KnightAttacks = new UInt64[64]; // square
 
@@ -19,6 +21,15 @@ namespace BitBoard_based_Chess
         internal static readonly UInt64[,] FileAttacks = new UInt64[64, 64]; // square , occupancy
         internal static readonly UInt64[,] DiagonalAttacks = new UInt64[64, 64]; // square , occupancy
         internal static readonly UInt64[,] AntiDiagonalAttacks = new UInt64[64, 64]; // square , occupancy
+
+        private static void InitPawnAttacks()
+        {         
+            for (int sq = 0; sq < 64; sq++)
+            {
+                WhitePawnAttacks[sq] = CompassRose.OneStepNorthEast(BitBoard.SquareMask(sq)) | CompassRose.OneStepNorthWest(BitBoard.SquareMask(sq));
+                BlackPawnAttacks[sq] = CompassRose.OneStepSouthEast(BitBoard.SquareMask(sq)) | CompassRose.OneStepSouthWest(BitBoard.SquareMask(sq));
+            }
+        }
 
         private static void InitKnightAttacks()
         {
@@ -179,6 +190,7 @@ namespace BitBoard_based_Chess
             MovePackHelper.InitFileAttacks();
             MovePackHelper.InitDiagonalAttacks();
             MovePackHelper.InitAntiDiagonalAttacks();
+            MovePackHelper.InitPawnAttacks();
             MovePackHelper.InitKingAttacks();
             MovePackHelper.InitKnightAttacks();
         }

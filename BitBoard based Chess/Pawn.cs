@@ -129,7 +129,7 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BitBoard GetAnyAttack(PieceColor color, BitBoard pawns, Board board)
+        internal static BitBoard GetAnyAttack(PieceColor color, BitBoard pawns, Board board)
         {
             return (GetEastAttacks(color, pawns) | GetWestAttacks(color, pawns)) & board.GetEnemyPieces(color);
         }

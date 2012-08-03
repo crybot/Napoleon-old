@@ -17,7 +17,21 @@ namespace BitBoard_based_Chess
             Board board = new Board();
             board.Equip();
 
-            UInt64 all = board.GetAllPieces();
+            //BitBoard square;
+            //BitBoard targets = Constants.Empty;
+
+            //for (int i = 0; i < 64; i++)
+            //{
+            //    square = BitBoard.SquareMask(i);
+
+            //    if (board.isAttacked(square, PieceColor.Black))
+            //    {
+            //        targets |= square;
+            //    }
+            //}
+
+            //BitBoard.Display(targets);
+            //Console.ReadKey();
 
             Console.Write("Tempo Impiegato: {0}", PerformanceTester.TestPerformance(() => { Test(board); }));
 
@@ -28,9 +42,11 @@ namespace BitBoard_based_Chess
         {
             List<Move> moves = MoveGenerator.GetAllMoves(PieceColor.White, board);
             byte i, k, l, m, n, p;
+            BitBoard square;
 
             for (i = 0; i < moves.Count; i++)
             {
+                square = BitBoard.SquareMask(i);
                 for (k = 0; k < moves.Count; k++)
                 {
                     for (l = 0; l < moves.Count; l++)
@@ -39,10 +55,13 @@ namespace BitBoard_based_Chess
                         {
                             for (n = 0; n < moves.Count; n++)
                             {
-                                MoveGenerator.GetAllMoves(PieceColor.White, board);
+
                                 for (p = 0; p < moves.Count; p++)
                                 {
-                                    
+                                    if (board.isAttacked(square, PieceColor.Black))
+                                    {
+
+                                    }
                                 }
                             }
                         }
