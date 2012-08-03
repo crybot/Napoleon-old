@@ -12,14 +12,8 @@ namespace BitBoard_based_Chess
             BitBoard kingMoves = MovePackHelper.KingAttacks[(BitBoard.BitScanForward(king))];
             return kingMoves & ~board.GetPlayerPieces(pieceColor);
         }
-        internal static void InitKingAttacks()
-        {
-            for (int sq = 0; sq < 64; sq++)
-            {
-                MovePackHelper.KingAttacks[sq] = GetKingAttacks(BitBoard.SquareMask(sq));
-            }
-        }
-        private static BitBoard GetKingAttacks(BitBoard king)
+
+        internal static BitBoard GetKingAttacks(BitBoard king)
         {
             BitBoard attacks = CompassRose.OneStepEast(king) | CompassRose.OneStepWest(king);
             king |= attacks;

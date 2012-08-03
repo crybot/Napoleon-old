@@ -19,15 +19,8 @@ namespace BitBoard_based_Chess
 
             return targets & ~board.GetPlayerPieces(pieceColor);
         }
-        internal static void InitKnightAttacks()
-        {
-            // inizializza l'array di mosse precalcolate
-            for (int sq = 0; sq < 64; sq++)
-            {
-                MovePackHelper.KnightAttacks[sq] = GetKnightAttacks(BitBoard.SquareMask(sq));
-            }
-        }
-        private static BitBoard GetKnightAttacks(BitBoard knights)
+
+        internal static BitBoard GetKnightAttacks(BitBoard knights)
         {
             BitBoard west, east, attacks;
             east = CompassRose.OneStepEast(knights);

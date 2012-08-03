@@ -19,7 +19,23 @@ namespace BitBoard_based_Chess
         internal static readonly UInt64[,] FileAttacks = new UInt64[64, 64]; // square , occupancy
         internal static readonly UInt64[,] DiagonalAttacks = new UInt64[64, 64]; // square , occupancy
         internal static readonly UInt64[,] AntiDiagonalAttacks = new UInt64[64, 64]; // square , occupancy
-        
+
+        private static void InitKnightAttacks()
+        {
+            // inizializza l'array di mosse precalcolate
+            for (int sq = 0; sq < 64; sq++)
+            {
+                KnightAttacks[sq] = Knight.GetKnightAttacks(BitBoard.SquareMask(sq));
+            }
+        }
+        private static void InitKingAttacks()
+        {
+            for (int sq = 0; sq < 64; sq++)
+            {
+                // inizializza l'array di mosse precalcolate
+                KingAttacks[sq] = King.GetKingAttacks(BitBoard.SquareMask(sq));
+            }
+        }
         private static void InitRankAttacks()
         {
             for (int sq = 0; sq < 64; sq++)
@@ -163,9 +179,8 @@ namespace BitBoard_based_Chess
             MovePackHelper.InitFileAttacks();
             MovePackHelper.InitDiagonalAttacks();
             MovePackHelper.InitAntiDiagonalAttacks();
-
-            King.InitKingAttacks();
-            Knight.InitKnightAttacks();
+            MovePackHelper.InitKingAttacks();
+            MovePackHelper.InitKnightAttacks();
         }
     }
 }
