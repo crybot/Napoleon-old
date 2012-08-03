@@ -14,8 +14,11 @@ namespace BitBoard_based_Chess
 
         #region MagicMultipliers
 
-        internal static readonly UInt64[] FileMagic = {0x8040201008040200, 0x4020100804020100, 0x2010080402010080, 0x1008040201008040,
-                                                        0x0804020100804020, 0x0402010080402010, 0x0201008040201008, 0x0100804020100804 };
+        internal static readonly UInt64[] FileMagic = 
+        {
+            0x8040201008040200, 0x4020100804020100, 0x2010080402010080, 0x1008040201008040,
+            0x0804020100804020, 0x0402010080402010, 0x0201008040201008, 0x0100804020100804 
+        };
 
         internal static readonly UInt64[] DiagonalMagic = 
         { 
@@ -42,7 +45,7 @@ namespace BitBoard_based_Chess
         /// saranno utili nella generazione delle mosse delle torri e delle regine
         /// per ottenere i gradi di occupazione a 6 bit di tali pezzi
         /// </summary>
-        /// 
+
         internal static readonly UInt64[] SixBitRankMask = 
         { 
             0x000000000000007E, 0x0000000000007E00, 0x00000000007E0000,
