@@ -84,7 +84,7 @@ namespace BitBoard_based_Chess
         }
         internal void LoadGame(FenString fenString)
         {
-            pieceSet = fenString.Parse().PiecePlacement;
+            pieceSet = fenString.PiecePlacement;
 
             #region Bitboards Setting
 
