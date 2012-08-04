@@ -8,7 +8,7 @@ namespace BitBoard_based_Chess
 {
     internal static class Extensions
     {
-        internal static char GetInitial(this PieceType type)
+        internal static char GetInitial(this byte type)
         {
             switch (type)
             {

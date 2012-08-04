@@ -2,33 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace BitBoard_based_Chess
 {
     internal struct Move
     {
-        private readonly Square fromSquare;
-        private readonly Square toSquare;
-        private readonly PieceType pieceMoved;
+        private readonly int FromSquare;
+        private readonly int ToSquare;
+        private readonly byte PieceMoved;
+        private readonly byte PieceCaptured;
+        private readonly byte PiecePromoted;
 
-        internal Square FromSquare
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal Move(int fromSquare, int toSquare, byte pieceMoved, byte pieceCaptured, byte piecePromoted)
         {
-            get { return fromSquare; }
-        } 
-        internal Square ToSquare
-        {
-            get { return toSquare; }
-        }
-        internal PieceType PieceMoved
-        {
-            get { return pieceMoved; }
-        }
-    
-        internal Move(Square fromSquare, Square toSquare, PieceType pieceMoved)
-        {
-            this.fromSquare = fromSquare;
-            this.toSquare = toSquare;
-            this.pieceMoved = pieceMoved;
+            this.FromSquare = fromSquare;
+            this.ToSquare = toSquare;
+            this.PieceMoved = pieceMoved;
+            this.PieceCaptured = pieceCaptured;
+            this.PiecePromoted = piecePromoted;
         }
 
         public static bool operator ==(Move a, Move b)
@@ -44,7 +37,7 @@ namespace BitBoard_based_Chess
             if (other is Move)
             {
                 Move compare = (Move)other;
-                return (this.fromSquare == compare.fromSquare && this.toSquare == compare.toSquare);
+                return (this.FromSquare == compare.FromSquare && this.ToSquare == compare.ToSquare);
             }
             else
             {
@@ -60,9 +53,9 @@ namespace BitBoard_based_Chess
         {
             StringBuilder algebraic = new StringBuilder();
 
-            algebraic.Append(this.pieceMoved.GetInitial());
-            algebraic.Append(this.fromSquare.ToAlgebraic());
-            algebraic.Append(this.toSquare.ToAlgebraic());
+            algebraic.Append(this.PieceMoved.GetInitial());
+            algebraic.Append(new Square(this.FromSquare).ToAlgebraic()); // TODO
+            algebraic.Append(new Square(this.ToSquare).ToAlgebraic()); // TODO
 
             return algebraic.ToString();
         }

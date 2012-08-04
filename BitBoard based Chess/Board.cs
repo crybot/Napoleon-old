@@ -9,13 +9,13 @@ namespace BitBoard_based_Chess
 {
     internal sealed class Board
     {
+        internal Piece[] pieceSet = new Piece[64];
+
         #region BitBoardsDictionaries
 
-        private Dictionary<PieceType, BitBoard> whiteBitBoardSet = new Dictionary<PieceType, BitBoard>();
-        private Dictionary<PieceType, BitBoard> blackBitBoardSet = new Dictionary<PieceType, BitBoard>();
+        private Dictionary<byte, BitBoard> whiteBitBoardSet = new Dictionary<byte, BitBoard>();
+        private Dictionary<byte, BitBoard> blackBitBoardSet = new Dictionary<byte, BitBoard>();
         #endregion
-
-        private Piece[] pieceSet = new Piece[64];
 
         #region Generic BitBoards
 
@@ -23,6 +23,7 @@ namespace BitBoard_based_Chess
         private BitBoard blackPieces = Constants.Empty;
         private BitBoard allPieces = Constants.Empty;
         private BitBoard emptySquares = Constants.Empty;
+
         #endregion
 
         internal Board()
@@ -105,7 +106,7 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal BitBoard GetPieceSet(PieceColor pieceColor, PieceType pieceType)
+        internal BitBoard GetPieceSet(PieceColor pieceColor, byte pieceType)
         {
             return pieceColor == PieceColor.White ? whiteBitBoardSet[pieceType] : blackBitBoardSet[pieceType];
         }

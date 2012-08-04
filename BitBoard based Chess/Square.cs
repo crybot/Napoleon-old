@@ -8,30 +8,21 @@ namespace BitBoard_based_Chess
 {
     internal struct Square
     {
-        private readonly int file;
-        private readonly int rank;
-
-        internal int File
-        {
-            get { return this.file; }
-        }
-        internal int Rank
-        {
-            get { return this.rank; }
-        }
+        internal readonly int File;
+        internal readonly int Rank;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Square(int file, int rank)
         {
-            this.file = file;
-            this.rank = rank;
+            this.File = file;
+            this.Rank = rank;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Square(int squareIndex)
         {
-            this.file = squareIndex % 8; // & 7
-            this.rank = squareIndex / 8; // >> 3
+            this.File = squareIndex % 8; // & 7
+            this.Rank = squareIndex / 8; // >> 3
         }
 
         public static implicit operator Square(string str)

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace BitBoard_based_Chess
 {
-
     internal struct BitBoard
     {
-        private UInt64 value;
+        internal UInt64 value;
 
         private BitBoard(UInt64 board)
         {
@@ -115,8 +114,7 @@ namespace BitBoard_based_Chess
                 to = BitBoard.BitScanForward(target);
                 pawnAttacks = side == PieceColor.White ? MovePackHelper.WhitePawnAttacks[to] : MovePackHelper.BlackPawnAttacks[to];
 
-                if ((board.GetPieceSet(enemy, PieceType.Pawn) & pawnAttacks) != 0)
-                    return true;
+                if ((board.GetPieceSet(enemy, PieceType.Pawn) & pawnAttacks) != 0) return true;
                 if ((board.GetPieceSet(enemy, PieceType.Knight) & MovePackHelper.KnightAttacks[to]) != 0) return true;
                 if ((board.GetPieceSet(enemy, PieceType.King) & MovePackHelper.KingAttacks[to]) != 0) return true;
 
@@ -125,10 +123,8 @@ namespace BitBoard_based_Chess
 
                 if (slidingAttackers != 0)
                 {
-                    if ((MovePackHelper.GetRankAttacks(allPieces, to) & slidingAttackers) != 0)
-                        return true;
-                    if ((MovePackHelper.GetFileAttacks(allPieces, to) & slidingAttackers) != 0)
-                        return true;
+                    if ((MovePackHelper.GetRankAttacks(allPieces, to) & slidingAttackers) != 0) return true;
+                    if ((MovePackHelper.GetFileAttacks(allPieces, to) & slidingAttackers) != 0) return true;
                 }
 
                 // diagonals
@@ -136,10 +132,8 @@ namespace BitBoard_based_Chess
 
                 if (slidingAttackers != 0)
                 {
-                    if ((MovePackHelper.GetH1A8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0)
-                        return true;
-                    if ((MovePackHelper.GetA1H8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0)
-                        return true;
+                    if ((MovePackHelper.GetH1A8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0) return true;
+                    if ((MovePackHelper.GetA1H8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0) return true;
                 }
 
                 target.value &= target.value - 1;

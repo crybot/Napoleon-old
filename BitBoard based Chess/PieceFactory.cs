@@ -7,7 +7,7 @@ namespace BitBoard_based_Chess
 {
     class PieceFactory
     {
-        public Piece Create(PieceType pieceType, PieceColor pieceColor)
+        public Piece Create(byte pieceType, PieceColor pieceColor)
         {
             return new Piece(pieceColor, pieceType);
         }

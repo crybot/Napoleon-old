@@ -8,15 +8,12 @@ namespace BitBoard_based_Chess
 {
     static class Bishop
     {
-        private static BitBoard occupiedSquares;
-        private static BitBoard targets;
-        private static int square;
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static BitBoard GetAllTargets(PieceColor pieceColor, BitBoard bishops, Board board)
         {
-            occupiedSquares = board.GetAllPieces();
-            targets = Constants.Empty;
+            BitBoard occupiedSquares = board.GetAllPieces();
+            BitBoard targets = Constants.Empty;
+            int square;
 
             while (bishops != 0)
             {

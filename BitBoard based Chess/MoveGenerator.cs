@@ -19,28 +19,25 @@ namespace BitBoard_based_Chess
         private delegate BitBoard GetTargetsDelegate(PieceColor color, BitBoard pieces, Board board);
 
         private static List<Move> moveList = new List<Move>();
-        private static BitBoard targets;
-        private static Square fromSquare;
-        private static Square toSquare;
-        private static int fromIndex;
-        private static int toIndex;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static List<Move> ExtractMoves(PieceColor color, PieceType type, BitBoard pieces, Board board, GetTargetsDelegate getTargets)
+        private static List<Move> ExtractMoves(PieceColor color, byte type, BitBoard pieces, Board board, GetTargetsDelegate getTargets)
         {
+            BitBoard targets;
+            int fromIndex;
+            int toIndex;
+
             moveList.Clear();
 
             while (pieces != 0)
             {
                 fromIndex = BitBoard.BitScanForwardReset(ref pieces); // search for LS1B and then reset it
-                fromSquare = new Square(fromIndex);
-                targets = getTargets.Invoke(color, Constants.SquareMask[fromIndex], board);
+                targets = getTargets(color, Constants.SquareMask[fromIndex], board);
 
                 while (targets != 0)
                 {
                     toIndex = BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
-                    toSquare = new Square(toIndex);
-                    moveList.Add(new Move(fromSquare, toSquare, type));                    
+                    moveList.Add(new Move(fromIndex, toIndex, type, board.pieceSet[toIndex].PieceType, 0));
                 }
             }
             return moveList;
