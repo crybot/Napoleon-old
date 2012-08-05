@@ -8,40 +8,33 @@ namespace BitBoard_based_Chess
 {
     internal static class MoveGenerator
     {
-        /// <summary>
-        /// Questo delegato e` usato per generalizzare la serializzazione (o estrazione) delle mosse
-        /// riducendo di molto il codice duplicato, ma non compromettendo le prestazioni.
-        /// Il metodo che andra` a sostituire il delegato deve restituire una BitBoard che rappresenta
-        /// le mosse possibili del pezzo sottoposto alla verifica e deve accettare gli stessi parametri
-        /// del delegato
-        /// </summary>
-
-        private delegate BitBoard GetTargetsDelegate(PieceColor color, BitBoard pieces, Board board);
-
         private static List<Move> moveList = new List<Move>();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static List<Move> ExtractMoves(PieceColor color, byte type, BitBoard pieces, Board board, GetTargetsDelegate getTargets)
-        {
-            BitBoard targets;
-            int fromIndex;
-            int toIndex;
+        //private delegate BitBoard GetTargetsDelegate(PieceColor color, BitBoard pieces, Board board);
 
-            moveList.Clear();
 
-            while (pieces != 0)
-            {
-                fromIndex = BitBoard.BitScanForwardReset(ref pieces); // search for LS1B and then reset it
-                targets = getTargets(color, Constants.SquareMask[fromIndex], board);
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //private static List<Move> ExtractMoves(PieceColor color, byte type, BitBoard pieces, Board board, GetTargetsDelegate getTargets)
+        //{
+        //    BitBoard targets;
+        //    byte fromIndex;
+        //    byte toIndex;
 
-                while (targets != 0)
-                {
-                    toIndex = BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
-                    moveList.Add(new Move(fromIndex, toIndex, type, board.pieceSet[toIndex].PieceType, 0));
-                }
-            }
-            return moveList;
-        }
+        //    moveList.Clear();
+
+        //    while (pieces != 0)
+        //    {
+        //        fromIndex = (byte)BitBoard.BitScanForwardReset(ref pieces); // search for LS1B and then reset it
+        //        targets = getTargets(color, Constants.SquareMask[fromIndex], board);
+
+        //        while (targets != 0)
+        //        {
+        //            toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
+        //            moveList.Add(new Move(fromIndex, toIndex, type, board.pieceSet[toIndex].PieceType, 0));
+        //        }
+        //    }
+        //    return moveList;
+        //}
 
         internal static List<Move> GetAllMoves(PieceColor color, Board board)
         {
@@ -56,27 +49,145 @@ namespace BitBoard_based_Chess
         }
         internal static List<Move> GetPawnMoves(PieceColor color, BitBoard pawns, Board board)
         {
-            return ExtractMoves(color, PieceType.Pawn, pawns, board, Pawn.GetAllTargets);
+            BitBoard targets;
+            byte fromIndex;
+            byte toIndex;
+
+            moveList.Clear();
+
+            while (pawns != 0)
+            {
+                fromIndex = (byte)BitBoard.BitScanForwardReset(ref pawns); // search for LS1B and then reset it
+                targets = Pawn.GetAllTargets(color, Constants.SquareMask[fromIndex], board);
+
+                while (targets != 0)
+                {
+                    toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
+
+                    // promotions
+                    if (Square.GetRankIndex(toIndex) == 8)
+                    {
+                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Queen));
+                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Rook));
+                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Bishop));
+                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Knight));
+                    }
+                    else
+                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.None)); // no promotions
+                }
+            }
+
+            return moveList;
         }
         internal static List<Move> GetKingMoves(PieceColor color, BitBoard king, Board board)
         {
-            return ExtractMoves(color, PieceType.King, king, board, King.GetAllTargets);
+            BitBoard targets;
+            byte fromIndex;
+            byte toIndex;
+
+            moveList.Clear();
+
+            while (king != 0)
+            {
+                fromIndex = (byte)BitBoard.BitScanForwardReset(ref king); // search for LS1B and then reset it
+                targets = King.GetAllTargets(color, Constants.SquareMask[fromIndex], board);
+
+                while (targets != 0)
+                {
+                    toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
+                    moveList.Add(new Move(fromIndex, toIndex, PieceType.King, board.pieceSet[toIndex].Type, PieceType.None));
+                }
+            }
+
+            return moveList;
         }
         internal static List<Move> GetKnightMoves(PieceColor color, BitBoard knights, Board board)
         {
-            return ExtractMoves(color, PieceType.Knight, knights, board, Knight.GetAllTargets);
+            BitBoard targets;
+            byte fromIndex;
+            byte toIndex;
+
+            moveList.Clear();
+
+            while (knights != 0)
+            {
+                fromIndex = (byte)BitBoard.BitScanForwardReset(ref knights); // search for LS1B and then reset it
+                targets = Knight.GetAllTargets(color, Constants.SquareMask[fromIndex], board);
+
+                while (targets != 0)
+                {
+                    toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
+                    moveList.Add(new Move(fromIndex, toIndex, PieceType.Knight, board.pieceSet[toIndex].Type, PieceType.None));
+                }
+            }
+
+            return moveList;
         }
         internal static List<Move> GetRookMoves(PieceColor color, BitBoard rooks, Board board)
         {
-            return ExtractMoves(color, PieceType.Rook, rooks, board, Rook.GetAllTargets);
+            BitBoard targets;
+            byte fromIndex;
+            byte toIndex;
+
+            moveList.Clear();
+
+            while (rooks != 0)
+            {
+                fromIndex = (byte)BitBoard.BitScanForwardReset(ref rooks); // search for LS1B and then reset it
+                targets = Rook.GetAllTargets(color, Constants.SquareMask[fromIndex], board);
+
+                while (targets != 0)
+                {
+                    toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
+                    moveList.Add(new Move(fromIndex, toIndex, PieceType.Rook, board.pieceSet[toIndex].Type, PieceType.None));
+                }
+            }
+
+            return moveList;
         }
         internal static List<Move> GetBishopMoves(PieceColor color, BitBoard bishops, Board board)
         {
-            return ExtractMoves(color, PieceType.Bishop, bishops, board, Bishop.GetAllTargets);
+            BitBoard targets;
+            byte fromIndex;
+            byte toIndex;
+
+            moveList.Clear();
+
+            while (bishops != 0)
+            {
+                fromIndex = (byte)BitBoard.BitScanForwardReset(ref bishops); // search for LS1B and then reset it
+                targets = Bishop.GetAllTargets(color, Constants.SquareMask[fromIndex], board);
+
+                while (targets != 0)
+                {
+                    toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
+                    moveList.Add(new Move(fromIndex, toIndex, PieceType.Bishop, board.pieceSet[toIndex].Type, PieceType.None));
+                }
+            }
+
+            return moveList;
         }
         internal static List<Move> GetQueenMoves(PieceColor color, BitBoard queens, Board board)
         {
-            return ExtractMoves(color, PieceType.Queen, queens, board, Queen.GetAllTargets);
+            BitBoard targets;
+            byte fromIndex;
+            byte toIndex;
+
+            moveList.Clear();
+
+            while (queens != 0)
+            {
+                fromIndex = (byte)BitBoard.BitScanForwardReset(ref queens); // search for LS1B and then reset it
+                targets = Queen.GetAllTargets(color, Constants.SquareMask[fromIndex], board);
+
+                while (targets != 0)
+                {
+                    toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
+                    moveList.Add(new Move(fromIndex, toIndex, PieceType.Queen, board.pieceSet[toIndex].Type, PieceType.None));
+                }
+            }
+
+            return moveList;
         }
 
     }

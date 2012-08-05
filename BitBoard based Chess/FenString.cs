@@ -7,9 +7,9 @@ namespace BitBoard_based_Chess
 {
     class FenString
     {
-        public string FenStr { get; set; }
+        public string FullString { get; set; }
 
-        public Piece[] PiecePlacement { get; set; }
+        public Piece[] PiecePlacement = new Piece[64];
         public PieceColor SideToMove { get; set; }
         public bool CanWhiteShortCastle { get; set; }
         public bool CanWhiteLongCastle { get; set; }
@@ -23,15 +23,15 @@ namespace BitBoard_based_Chess
         }
         public FenString(string str)
         {
-            this.Parse(str);
+            this.FullString = str;
+            this.Parse();
         }
 
-        public void Parse(string input)
+        public void Parse()
         {
-            this.FenStr = input;
-            this.PiecePlacement = new Piece[64];
+            Board.InitializePieceSet(ref this.PiecePlacement);
 
-            string[] fields = input.Split(' ');
+            string[] fields = this.FullString.Split(' ');
 
             string piecePlacement = fields[0];
             string sideToMove = fields[1];

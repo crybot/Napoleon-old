@@ -41,7 +41,7 @@ namespace BitBoard_based_Chess
         private static void Test(Board board)
         {
             List<Move> moves = MoveGenerator.GetAllMoves(PieceColor.White, board);
-            byte i, k, l, m, n, p;
+            short i, k, l, m, n, p;
 
             //i = 0;
             //foreach (Move move in moves)

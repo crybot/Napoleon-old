@@ -16,7 +16,7 @@ namespace BitBoard_based_Chess
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static BitBoard GetAllTargets(PieceColor color, BitBoard pawns, Board board)
         {
-            BitBoard empty = board.GetEmptySquares();
+            BitBoard empty = board.EmptySquares;
             BitBoard enemyPieces = board.GetEnemyPieces(color);
 
             return GetQuietTargets(color, pawns, empty) | GetAnyAttack(color, pawns, board);

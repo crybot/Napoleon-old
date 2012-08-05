@@ -8,8 +8,8 @@ namespace BitBoard_based_Chess
 {
     internal struct Square
     {
-        internal readonly int File;
-        internal readonly int Rank;
+        private readonly int File;
+        private readonly int Rank;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Square(int file, int rank)
@@ -60,46 +60,54 @@ namespace BitBoard_based_Chess
             return base.GetHashCode();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetA1H8DiagonalIndex(int file, int rank)
         {
             return 7 + rank - file;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetA1H8DiagonalIndex(int squareIndex)
         {
             return 7 + GetRankIndex(squareIndex) - GetFileIndex(squareIndex);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetH1A8AntiDiagonalIndex(int file, int rank)
         {
             return rank + file;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetH1A8AntiDiagonalIndex(int squareIndex)
         {
             return GetRankIndex(squareIndex) + GetFileIndex(squareIndex);
         }
 
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetFileIndex(int squareIndex)
         {
-            return squareIndex % 8;
+            return squareIndex & 7;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetRankIndex(int squareIndex)
         {
-            return squareIndex / 8;
+            return squareIndex >> 3;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetSquareIndex(int file, int rank)
         {
             return file + 8 * rank;
         }
 
-        internal string ToAlgebraic()
+        internal static string ToAlgebraic(int square)
         {
-            string str = "";
-            str += (char)(this.File + 97);
-            str += (this.Rank + 1).ToString();
+            string str = string.Empty;
+            str += (char)(Square.GetFileIndex(square) + 97);
+            str += (int)(Square.GetRankIndex(square) + 1);
 
             return str;
         }

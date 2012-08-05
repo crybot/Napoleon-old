@@ -14,13 +14,13 @@ namespace BitBoard_based_Chess
     /// </summary>
     internal static class PieceType
     {
-        internal const byte None = 0;
-        internal const byte Pawn = 1;
-        internal const byte Knight = 2;
-        internal const byte Bishop = 3;
-        internal const byte Rook = 4;
-        internal const byte Queen = 5;
-        internal const byte King = 6;
+        internal const byte Pawn = 0;
+        internal const byte Knight = 1;
+        internal const byte Bishop = 2;
+        internal const byte Rook = 3;
+        internal const byte Queen = 4;
+        internal const byte King = 5;
+        internal const byte None = 6;
     }
 
     //internal static class PieceColor
@@ -32,13 +32,13 @@ namespace BitBoard_based_Chess
 
     internal struct Piece
     {
-        internal readonly byte PieceType;
-        internal readonly PieceColor PieceColor;
+        internal readonly byte Type;
+        internal readonly PieceColor Color;
 
         internal Piece(PieceColor pieceColor, byte pieceType)
         {
-            this.PieceColor = pieceColor;
-            this.PieceType = pieceType;
+            this.Color = pieceColor;
+            this.Type = pieceType;
         }
     }
 }

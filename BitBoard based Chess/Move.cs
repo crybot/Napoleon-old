@@ -8,14 +8,14 @@ namespace BitBoard_based_Chess
 {
     internal struct Move
     {
-        private readonly int FromSquare;
-        private readonly int ToSquare;
+        private readonly byte FromSquare;
+        private readonly byte ToSquare;
         private readonly byte PieceMoved;
         private readonly byte PieceCaptured;
         private readonly byte PiecePromoted;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal Move(int fromSquare, int toSquare, byte pieceMoved, byte pieceCaptured, byte piecePromoted)
+        internal Move(byte fromSquare, byte toSquare, byte pieceMoved, byte pieceCaptured, byte piecePromoted)
         {
             this.FromSquare = fromSquare;
             this.ToSquare = toSquare;
@@ -54,8 +54,8 @@ namespace BitBoard_based_Chess
             StringBuilder algebraic = new StringBuilder();
 
             algebraic.Append(this.PieceMoved.GetInitial());
-            algebraic.Append(new Square(this.FromSquare).ToAlgebraic()); // TODO
-            algebraic.Append(new Square(this.ToSquare).ToAlgebraic()); // TODO
+            algebraic.Append(Square.ToAlgebraic(this.FromSquare)); // TODO
+            algebraic.Append(Square.ToAlgebraic(this.ToSquare)); // TODO
 
             return algebraic.ToString();
         }

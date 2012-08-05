@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace BitBoard_based_Chess
 {
     internal struct BitBoard
     {
-        internal UInt64 value;
+        private UInt64 value;
 
         private BitBoard(UInt64 board)
         {
@@ -69,35 +70,32 @@ namespace BitBoard_based_Chess
             }
             Console.WriteLine("\n    A  B  C  D  E  F  G  H");
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int PopCount(BitBoard bitBoard)
         {
-            UInt64 M1 = 0x5555555555555555;  // 1 zero,  1 one ...
-            UInt64 M2 = 0x3333333333333333;  // 2 zeros,  2 ones ...
-            UInt64 M4 = 0x0f0f0f0f0f0f0f0f;  // 4 zeros,  4 ones ...
-            UInt64 M8 = 0x00ff00ff00ff00ff;  // 8 zeros,  8 ones ...
-            UInt64 M16 = 0x0000ffff0000ffff;  // 16 zeros, 16 ones ...
-            UInt64 M32 = 0x00000000ffffffff;  // 32 zeros, 32 ones
-
-            bitBoard.value = (bitBoard.value & M1) + ((bitBoard.value >> 1) & M1);   //put count of each  2 bits into those  2 bits
-            bitBoard.value = (bitBoard.value & M2) + ((bitBoard.value >> 2) & M2);   //put count of each  4 bits into those  4 bits
-            bitBoard.value = (bitBoard.value & M4) + ((bitBoard.value >> 4) & M4);   //put count of each  8 bits into those  8 bits
-            bitBoard.value = (bitBoard.value & M8) + ((bitBoard.value >> 8) & M8);   //put count of each 16 bits into those 16 bits
-            bitBoard.value = (bitBoard.value & M16) + ((bitBoard.value >> 16) & M16);   //put count of each 32 bits into those 32 bits
-            bitBoard.value = (bitBoard.value & M32) + ((bitBoard.value >> 32) & M32);   //put count of each 64 bits into those 64 bits
-            return (int)bitBoard.value;
+            bitBoard.value -= ((bitBoard.value >> 1) & 0x5555555555555555UL);
+            bitBoard.value = ((bitBoard.value >> 2) & 0x3333333333333333UL) + (bitBoard.value & 0x3333333333333333UL);
+            bitBoard.value = ((bitBoard.value >> 4) + bitBoard.value) & 0x0F0F0F0F0F0F0F0FUL;
+            return (int)((bitBoard.value * 0x0101010101010101UL) >> 56);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int BitScanForward(BitBoard bitBoard)
         {
+            Debug.Assert(bitBoard.value != 0);
+
             return Constants.DeBrujinTable[((ulong)((long)bitBoard.value & -(long)bitBoard.value) * Constants.DeBrujinValue) >> 58];
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int BitScanForwardReset(ref BitBoard bitBoard)
         {
-            int bitIndex = Constants.DeBrujinTable[((ulong)((long)bitBoard.value & -(long)bitBoard.value) * Constants.DeBrujinValue) >> 58];
-            bitBoard.value &= bitBoard.value - 1;
-            return bitIndex;
+            Debug.Assert(bitBoard.value != 0);
+
+            UInt64 bb = bitBoard.value;
+            bitBoard.value &= (bitBoard.value - 1);
+
+            return Constants.DeBrujinTable[((ulong)((long)bb & -(long)bb) * Constants.DeBrujinValue) >> 58];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -105,7 +103,7 @@ namespace BitBoard_based_Chess
         {
             BitBoard slidingAttackers;
             BitBoard pawnAttacks;
-            BitBoard allPieces = board.GetAllPieces();
+            BitBoard allPieces = board.AllPieces;
             PieceColor enemy = side.GetOpposite();
             int to;
 
