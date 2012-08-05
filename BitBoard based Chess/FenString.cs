@@ -124,30 +124,9 @@ namespace BitBoard_based_Chess
             this.CanBlackShortCastle = false;
             this.CanBlackLongCastle = false;
 
-            if (field.Length > 1)
+            for (int i = 0; i < field.Length; i++)
             {
-                for (int i = 0; i < field.Length; i++)
-                {
-                    switch (field[i])
-                    {
-                        case 'K':
-                            this.CanWhiteShortCastle = true;
-                            break;
-                        case 'k':
-                            this.CanBlackShortCastle = true;
-                            break;
-                        case 'Q':
-                            this.CanWhiteLongCastle = true;
-                            break;
-                        case 'q':
-                            this.CanBlackLongCastle = true;
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                switch (field[0])
+                switch (field[i])
                 {
                     case 'K':
                         this.CanWhiteShortCastle = true;
@@ -160,8 +139,6 @@ namespace BitBoard_based_Chess
                         break;
                     case 'q':
                         this.CanBlackLongCastle = true;
-                        break;
-                    default:
                         break;
                 }
             }
