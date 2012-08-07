@@ -10,12 +10,12 @@ namespace BitBoard_based_Chess
         public string FullString { get; set; }
 
         public Piece[] PiecePlacement = new Piece[64];
-        public PieceColor SideToMove { get; set; }
+        public byte SideToMove { get; set; }
         public bool CanWhiteShortCastle { get; set; }
         public bool CanWhiteLongCastle { get; set; }
         public bool CanBlackShortCastle { get; set; }
         public bool CanBlackLongCastle { get; set; }
-        public Square? EnPassantTargetSquare { get; set; }
+        public int? EnPassantSquare { get; set; }
 
         public static implicit operator FenString(string str)
         {
@@ -29,8 +29,6 @@ namespace BitBoard_based_Chess
 
         public void Parse()
         {
-            Board.InitializePieceSet(ref this.PiecePlacement);
-
             string[] fields = this.FullString.Split(' ');
 
             string piecePlacement = fields[0];
@@ -48,13 +46,15 @@ namespace BitBoard_based_Chess
 
         private void ParsePiecePlacement(string field)
         {
+            Board.ClearPieceSet(ref this.PiecePlacement);
+
             string[] ranks = field.Split('/');
             PieceFactory factory = new PieceFactory();
 
-            for (int i = 0; i < ranks.Length; i++)
+            for (Int32 i = 0; i < ranks.Length; i++)
             {
-                int empty = 0;
-                for (int l = 0; l < ranks[i].Length; l++)
+                Int32 empty = 0;
+                for (Int32 l = 0; l < ranks[i].Length; l++)
                 {
                     #region pieceCreation
 
@@ -97,7 +97,7 @@ namespace BitBoard_based_Chess
                             this.PiecePlacement[Square.GetSquareIndex(l + empty, 7 - i)] = factory.Create(PieceType.King, PieceColor.Black);
                             break;
                         default:
-                            empty += (int)char.GetNumericValue(ranks[i][l]) - 1;
+                            empty += (Int32)char.GetNumericValue(ranks[i][l]) - 1;
                             break;
                     }
 
@@ -124,7 +124,7 @@ namespace BitBoard_based_Chess
             this.CanBlackShortCastle = false;
             this.CanBlackLongCastle = false;
 
-            for (int i = 0; i < field.Length; i++)
+            for (Int32 i = 0; i < field.Length; i++)
             {
                 switch (field[i])
                 {
@@ -148,11 +148,11 @@ namespace BitBoard_based_Chess
             if (field.Length == 1)
             {
                 if (field[0] == '-')
-                    this.EnPassantTargetSquare = null;
+                    this.EnPassantSquare = null;
             }
             else
             {
-                this.EnPassantTargetSquare = field;
+                this.EnPassantSquare = Square.Parse(field);
             }
         }
 

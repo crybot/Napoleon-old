@@ -9,11 +9,11 @@ namespace BitBoard_based_Chess
     static class Bishop
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static BitBoard GetAllTargets(PieceColor pieceColor, BitBoard bishops, Board board)
+        internal static BitBoard GetAllTargets(byte pieceColor, BitBoard bishops, Board board)
         {
-            BitBoard occupiedSquares = board.AllPieces;
+            BitBoard occupiedSquares = board.OccupiedSquares;
             BitBoard targets = Constants.Empty;
-            int square;
+            Int32 square;
 
             while (bishops != 0)
             {

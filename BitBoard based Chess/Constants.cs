@@ -109,6 +109,18 @@ namespace BitBoard_based_Chess
         internal const UInt64 NotABFile = NotAFile | NotBFile;
         internal const UInt64 NotGHFile = NotGFile | NotHFile;
 
+        internal const UInt64 WhiteCastleMaskOO = 0x0000000000000060;
+        internal const UInt64 WhiteCastleMaskOOO = 0x000000000000000E;
+
+        internal const UInt64 BlackCastleMaskOO = 0x6000000000000000;
+        internal const UInt64 BlackCastleMaskOOO = 0x0E00000000000000;
+
+        internal static readonly Move WhiteShortCastling = new Move(4, 6, PieceType.King, PieceType.None, PieceType.Rook);
+        internal static readonly Move WhiteLongCastling = new Move(4, 2, PieceType.King, PieceType.None, PieceType.Rook);
+
+        internal static readonly Move BlackShortCastling = new Move(60, 62, PieceType.King, PieceType.None, PieceType.Rook);
+        internal static readonly Move BlackLongCastling = new Move(60, 58, PieceType.King, PieceType.None, PieceType.Rook);
+
         internal static class Squares
         {
             internal const UInt64 A1 = 0x0000000000000001;
@@ -224,11 +236,10 @@ namespace BitBoard_based_Chess
 
         }
 
+        internal const Int32 MaxMoves = 192;
+
         internal const UInt64 DeBrujinValue = 0x07EDD5E59A4E28C2;
-
-        #region DeBrujinTable
-
-        internal static readonly int[] DeBrujinTable =
+        internal static readonly Int32[] DeBrujinTable =
         {
             63,  0, 58,  1, 59, 47, 53,  2,
             60, 39, 48, 27, 54, 33, 42,  3,
@@ -239,7 +250,6 @@ namespace BitBoard_based_Chess
             56, 45, 25, 31, 35, 16,  9, 12,
             44, 24, 15,  8, 23,  7,  6,  5
         };
-        #endregion
 
         #endregion
     }

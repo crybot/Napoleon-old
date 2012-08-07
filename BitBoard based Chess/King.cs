@@ -7,7 +7,7 @@ namespace BitBoard_based_Chess
 {
     internal static class King
     {
-        internal static BitBoard GetAllTargets(PieceColor pieceColor, BitBoard king, Board board)
+        internal static BitBoard GetAllTargets(byte pieceColor, BitBoard king, Board board)
         {
             BitBoard kingMoves = MovePackHelper.KingAttacks[(BitBoard.BitScanForward(king))];
             return kingMoves & ~board.GetPlayerPieces(pieceColor);

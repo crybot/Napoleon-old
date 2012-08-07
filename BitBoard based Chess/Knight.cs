@@ -7,7 +7,7 @@ namespace BitBoard_based_Chess
 {
     internal static class Knight
     {
-        internal static BitBoard GetAllTargets(PieceColor pieceColor, BitBoard knights, Board board)
+        internal static BitBoard GetAllTargets(byte pieceColor, BitBoard knights, Board board)
         {
             BitBoard targets = Constants.Empty;
 

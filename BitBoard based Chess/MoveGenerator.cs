@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,54 +7,34 @@ using System.Runtime.CompilerServices;
 
 namespace BitBoard_based_Chess
 {
+    
     internal static class MoveGenerator
     {
-        private static List<Move> moveList = new List<Move>();
+        private static readonly MoveList allMoves = new MoveList();
 
-        //private delegate BitBoard GetTargetsDelegate(PieceColor color, BitBoard pieces, Board board);
-
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //private static List<Move> ExtractMoves(PieceColor color, byte type, BitBoard pieces, Board board, GetTargetsDelegate getTargets)
-        //{
-        //    BitBoard targets;
-        //    byte fromIndex;
-        //    byte toIndex;
-
-        //    moveList.Clear();
-
-        //    while (pieces != 0)
-        //    {
-        //        fromIndex = (byte)BitBoard.BitScanForwardReset(ref pieces); // search for LS1B and then reset it
-        //        targets = getTargets(color, Constants.SquareMask[fromIndex], board);
-
-        //        while (targets != 0)
-        //        {
-        //            toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
-        //            moveList.Add(new Move(fromIndex, toIndex, type, board.pieceSet[toIndex].PieceType, 0));
-        //        }
-        //    }
-        //    return moveList;
-        //}
-
-        internal static List<Move> GetAllMoves(PieceColor color, Board board)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static MoveList GetAllMoves(byte color, Board board)
         {
-            List<Move> allMoves = new List<Move>(50);
-            allMoves.AddRange(GetPawnMoves(color, board.GetPieceSet(color, PieceType.Pawn), board));
-            allMoves.AddRange(GetKnightMoves(color, board.GetPieceSet(color, PieceType.Knight), board));
-            allMoves.AddRange(GetKingMoves(color, board.GetPieceSet(color, PieceType.King), board));
-            allMoves.AddRange(GetBishopMoves(color, board.GetPieceSet(color, PieceType.Bishop), board));
-            allMoves.AddRange(GetRookMoves(color, board.GetPieceSet(color, PieceType.Rook), board));
-            allMoves.AddRange(GetQueenMoves(color, board.GetPieceSet(color, PieceType.Queen), board));
+            allMoves.Clear();
+
+            GetPawnMoves(color, board.BitBoardSet[color][PieceType.Pawn], board, allMoves);
+            GetKnightMoves(color, board.BitBoardSet[color][PieceType.Knight], board, allMoves);
+            GetKingMoves(color, board.BitBoardSet[color][PieceType.King], board, allMoves);
+            GetBishopMoves(color, board.BitBoardSet[color][PieceType.Bishop], board, allMoves);
+            GetRookMoves(color, board.BitBoardSet[color][PieceType.Rook], board, allMoves);
+            GetQueenMoves(color, board.BitBoardSet[color][PieceType.Queen], board, allMoves);
+            GetCastleMoves(color, board, allMoves);
+
             return allMoves;
         }
-        internal static List<Move> GetPawnMoves(PieceColor color, BitBoard pawns, Board board)
+
+        internal static void GetPawnMoves(byte color, BitBoard pawns, Board board, MoveList moveList)
         {
             BitBoard targets;
+            BitBoard epTargets;
+            byte epIndex;
             byte fromIndex;
             byte toIndex;
-
-            moveList.Clear();
 
             while (pawns != 0)
             {
@@ -64,28 +45,38 @@ namespace BitBoard_based_Chess
                 {
                     toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
 
-                    // promotions
-                    if (Square.GetRankIndex(toIndex) == 8)
+                    // en passant
+                    if (board.EnPassantSquare != null)
                     {
-                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Queen));
-                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Rook));
-                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Bishop));
-                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Knight));
+                        epTargets = color == PieceColor.White ? MovePackHelper.WhitePawnAttacks[fromIndex] : MovePackHelper.BlackPawnAttacks[fromIndex];
+
+                        while (epTargets != 0)
+                        {
+                            epIndex = (byte)BitBoard.BitScanForwardReset(ref epTargets);
+
+                            if (epIndex == board.EnPassantSquare)
+                                moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, PieceType.Pawn, PieceType.Pawn);
+                        }
+                    }
+
+                    // promotions
+                    if (Square.GetRankIndex(toIndex) == 7 && color == PieceColor.White || Square.GetRankIndex(toIndex) == 0 && color == PieceColor.Black) 
+                    {
+                        moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Queen);
+                        moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Rook);
+                        moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Bishop);
+                        moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Knight);
                     }
                     else
-                        moveList.Add(new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.None)); // no promotions
+                        moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.None); // no promotions
                 }
             }
-
-            return moveList;
         }
-        internal static List<Move> GetKingMoves(PieceColor color, BitBoard king, Board board)
+        internal static void GetKingMoves(byte color, BitBoard king, Board board, MoveList moveList)
         {
             BitBoard targets;
             byte fromIndex;
             byte toIndex;
-
-            moveList.Clear();
 
             while (king != 0)
             {
@@ -95,19 +86,15 @@ namespace BitBoard_based_Chess
                 while (targets != 0)
                 {
                     toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
-                    moveList.Add(new Move(fromIndex, toIndex, PieceType.King, board.pieceSet[toIndex].Type, PieceType.None));
+                    moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.King, board.pieceSet[toIndex].Type, PieceType.None);
                 }
             }
-
-            return moveList;
         }
-        internal static List<Move> GetKnightMoves(PieceColor color, BitBoard knights, Board board)
+        internal static void GetKnightMoves(byte color, BitBoard knights, Board board, MoveList moveList)
         {
             BitBoard targets;
             byte fromIndex;
             byte toIndex;
-
-            moveList.Clear();
 
             while (knights != 0)
             {
@@ -117,19 +104,15 @@ namespace BitBoard_based_Chess
                 while (targets != 0)
                 {
                     toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
-                    moveList.Add(new Move(fromIndex, toIndex, PieceType.Knight, board.pieceSet[toIndex].Type, PieceType.None));
+                    moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Knight, board.pieceSet[toIndex].Type, PieceType.None);
                 }
             }
-
-            return moveList;
         }
-        internal static List<Move> GetRookMoves(PieceColor color, BitBoard rooks, Board board)
+        internal static void GetRookMoves(byte color, BitBoard rooks, Board board, MoveList moveList)
         {
             BitBoard targets;
             byte fromIndex;
             byte toIndex;
-
-            moveList.Clear();
 
             while (rooks != 0)
             {
@@ -139,19 +122,15 @@ namespace BitBoard_based_Chess
                 while (targets != 0)
                 {
                     toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
-                    moveList.Add(new Move(fromIndex, toIndex, PieceType.Rook, board.pieceSet[toIndex].Type, PieceType.None));
+                    moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Rook, board.pieceSet[toIndex].Type, PieceType.None);
                 }
             }
-
-            return moveList;
         }
-        internal static List<Move> GetBishopMoves(PieceColor color, BitBoard bishops, Board board)
+        internal static void GetBishopMoves(byte color, BitBoard bishops, Board board, MoveList moveList)
         {
             BitBoard targets;
             byte fromIndex;
             byte toIndex;
-
-            moveList.Clear();
 
             while (bishops != 0)
             {
@@ -161,19 +140,15 @@ namespace BitBoard_based_Chess
                 while (targets != 0)
                 {
                     toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
-                    moveList.Add(new Move(fromIndex, toIndex, PieceType.Bishop, board.pieceSet[toIndex].Type, PieceType.None));
+                    moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Bishop, board.pieceSet[toIndex].Type, PieceType.None);
                 }
             }
-
-            return moveList;
         }
-        internal static List<Move> GetQueenMoves(PieceColor color, BitBoard queens, Board board)
+        internal static void GetQueenMoves(byte color, BitBoard queens, Board board, MoveList moveList)
         {
             BitBoard targets;
             byte fromIndex;
             byte toIndex;
-
-            moveList.Clear();
 
             while (queens != 0)
             {
@@ -183,11 +158,42 @@ namespace BitBoard_based_Chess
                 while (targets != 0)
                 {
                     toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
-                    moveList.Add(new Move(fromIndex, toIndex, PieceType.Queen, board.pieceSet[toIndex].Type, PieceType.None));
+                    moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Queen, board.pieceSet[toIndex].Type, PieceType.None);
                 }
             }
+        }
 
-            return moveList;
+        internal static void GetCastleMoves(byte color, Board board, MoveList moveList)
+        {
+            if (color == PieceColor.White)
+            {
+                if (board.WhiteCanCastleOO)
+                {
+                    if ((Constants.WhiteCastleMaskOO & board.OccupiedSquares) == 0)
+                        moveList.moves[moveList.Lenght++] = Constants.WhiteShortCastling;
+
+                }
+                if (board.WhiteCanCastleOOO)
+                {
+                    if ((Constants.WhiteCastleMaskOOO & board.OccupiedSquares) == 0)
+                        moveList.moves[moveList.Lenght++] = Constants.WhiteLongCastling;
+                }
+
+            }
+            else if (color == PieceColor.Black)
+            {
+                if (board.BlackCanCastleOO)
+                {
+                    if ((Constants.BlackCastleMaskOO & board.OccupiedSquares) == 0)
+                        moveList.moves[moveList.Lenght++] = Constants.BlackShortCastling;
+                }
+                if (board.BlackCanCastleOOO)
+                {
+                    if ((Constants.BlackCastleMaskOOO & board.OccupiedSquares) == 0)
+                        moveList.moves[moveList.Lenght++] = Constants.BlackLongCastling;
+                }
+
+            }
         }
 
     }

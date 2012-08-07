@@ -14,7 +14,7 @@ namespace BitBoard_based_Chess
         /// </summary>
         /// 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static BitBoard GetAllTargets(PieceColor color, BitBoard pawns, Board board)
+        internal static BitBoard GetAllTargets(byte color, BitBoard pawns, Board board)
         {
             BitBoard empty = board.EmptySquares;
             BitBoard enemyPieces = board.GetEnemyPieces(color);
@@ -23,19 +23,19 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BitBoard GetQuietTargets(PieceColor color, BitBoard pawns, BitBoard empty)
+        private static BitBoard GetQuietTargets(byte color, BitBoard pawns, BitBoard empty)
         {
             return GetSinglePushTargets(color, pawns, empty) | GetDoublePushTargets(color, pawns, empty);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BitBoard GetSinglePushTargets(PieceColor color, BitBoard pawns, BitBoard empty)
+        private static BitBoard GetSinglePushTargets(byte color, BitBoard pawns, BitBoard empty)
         {
             return color == PieceColor.White ? CompassRose.OneStepNorth(pawns) & empty : CompassRose.OneStepSouth(pawns) & empty;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BitBoard GetDoublePushTargets(PieceColor color, BitBoard pawns, BitBoard empty)
+        private static BitBoard GetDoublePushTargets(byte color, BitBoard pawns, BitBoard empty)
         {
             BitBoard singlePush = GetSinglePushTargets(color, pawns, empty);
 
@@ -46,7 +46,7 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BitBoard GetPawnsAbleToSinglePush(PieceColor color, BitBoard pawns, BitBoard empty)
+        private static BitBoard GetPawnsAbleToSinglePush(byte color, BitBoard pawns, BitBoard empty)
         {
             switch (color)
             {
@@ -60,7 +60,7 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BitBoard GetPawnsAbleToDoublePush(PieceColor color, BitBoard pawns, BitBoard empty)
+        private static BitBoard GetPawnsAbleToDoublePush(byte color, BitBoard pawns, BitBoard empty)
         {
             switch (color)
             {
@@ -80,19 +80,19 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BitBoard GetEastAttacks(PieceColor color, BitBoard pawns)
+        private static BitBoard GetEastAttacks(byte color, BitBoard pawns)
         {
             return color == PieceColor.White ? CompassRose.OneStepNorthEast(pawns) : CompassRose.OneStepSouthEast(pawns);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BitBoard GetWestAttacks(PieceColor color, BitBoard pawns)
+        private static BitBoard GetWestAttacks(byte color, BitBoard pawns)
         {
             return color == PieceColor.White ? CompassRose.OneStepNorthWest(pawns) : CompassRose.OneStepSouthWest(pawns);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static BitBoard GetAnyAttack(PieceColor color, BitBoard pawns, Board board)
+        internal static BitBoard GetAnyAttack(byte color, BitBoard pawns, Board board)
         {
             return (GetEastAttacks(color, pawns) | GetWestAttacks(color, pawns)) & board.GetEnemyPieces(color);
         }

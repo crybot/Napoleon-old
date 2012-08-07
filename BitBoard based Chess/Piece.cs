@@ -6,7 +6,7 @@ using System.Text;
 namespace BitBoard_based_Chess
 {
     //internal enum PieceType : byte { None = 0x0, Pawn = 0x2, Knight = 0x4, Bishop = 0x8, Rook = 0x10, Queen = 0x20, King = 0x40 }
-    internal enum PieceColor { None, White, Black }
+    //internal enum PieceColor { None, White, Black }
 
     /// <summary>
     /// Viene utilizzata questa Pseudo-Enumerazione poiche` concede un notevole
@@ -23,19 +23,19 @@ namespace BitBoard_based_Chess
         internal const byte None = 6;
     }
 
-    //internal static class PieceColor
-    //{
-    //    internal const byte None = 0;
-    //    internal const byte White = 1;
-    //    internal const byte Black = 2;
-    //}
+    internal static class PieceColor
+    {
+        internal const byte White = 0;
+        internal const byte Black = 1;
+        internal const byte None = 2;
+    }
 
     internal struct Piece
     {
         internal readonly byte Type;
-        internal readonly PieceColor Color;
+        internal readonly byte Color;
 
-        internal Piece(PieceColor pieceColor, byte pieceType)
+        internal Piece(byte pieceColor, byte pieceType)
         {
             this.Color = pieceColor;
             this.Type = pieceType;

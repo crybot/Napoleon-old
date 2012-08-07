@@ -26,7 +26,7 @@ namespace BitBoard_based_Chess
             return board.value;
         }
 
-        internal static BitBoard ToBitBoard(int toConvert)
+        internal static BitBoard ToBitBoard(Int32 toConvert)
         {
             return (UInt64)toConvert;
         }
@@ -37,19 +37,19 @@ namespace BitBoard_based_Chess
             return (Int32)bitBoard.value;
         }
 
-        internal static bool IsBitSet(BitBoard bitBoard, int posBit)
+        internal static bool IsBitSet(BitBoard bitBoard, Int32 posBit)
         {
             return (bitBoard & ((UInt64)1 << (posBit))) != 0;
         }
         internal static void Display(BitBoard bitBoard)
         {
-            for (int r = 7; r >= 0; r--)
+            for (Int32 r = 7; r >= 0; r--)
             {
                 Console.WriteLine("   ------------------------");
 
                 Console.Write(" {0} ", r + 1);
 
-                for (int c = 0; c <= 7; c++)
+                for (Int32 c = 0; c <= 7; c++)
                 {
                     Console.Write('[');
                     if (IsBitSet(bitBoard, Square.GetSquareIndex(c, r)))
@@ -72,23 +72,23 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int PopCount(BitBoard bitBoard)
+        internal static Int32 PopCount(BitBoard bitBoard)
         {
             bitBoard.value -= ((bitBoard.value >> 1) & 0x5555555555555555UL);
             bitBoard.value = ((bitBoard.value >> 2) & 0x3333333333333333UL) + (bitBoard.value & 0x3333333333333333UL);
             bitBoard.value = ((bitBoard.value >> 4) + bitBoard.value) & 0x0F0F0F0F0F0F0F0FUL;
-            return (int)((bitBoard.value * 0x0101010101010101UL) >> 56);
+            return (Int32)((bitBoard.value * 0x0101010101010101UL) >> 56);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int BitScanForward(BitBoard bitBoard)
+        internal static Int32 BitScanForward(BitBoard bitBoard)
         {
             Debug.Assert(bitBoard.value != 0);
 
             return Constants.DeBrujinTable[((ulong)((long)bitBoard.value & -(long)bitBoard.value) * Constants.DeBrujinValue) >> 58];
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int BitScanForwardReset(ref BitBoard bitBoard)
+        internal static Int32 BitScanForwardReset(ref BitBoard bitBoard)
         {
             Debug.Assert(bitBoard.value != 0);
 
@@ -99,25 +99,25 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsAttacked(BitBoard target, PieceColor side, Board board)
+        internal static bool IsAttacked(BitBoard target, byte side, Board board)
         {
             BitBoard slidingAttackers;
             BitBoard pawnAttacks;
-            BitBoard allPieces = board.AllPieces;
-            PieceColor enemy = side.GetOpposite();
-            int to;
+            BitBoard allPieces = board.OccupiedSquares;
+            byte enemyColor = side.GetOpposite();
+            Int32 to;
 
             while (target != 0)
             {
-                to = BitBoard.BitScanForward(target);
+                to = BitBoard.BitScanForwardReset(ref target);
                 pawnAttacks = side == PieceColor.White ? MovePackHelper.WhitePawnAttacks[to] : MovePackHelper.BlackPawnAttacks[to];
 
-                if ((board.GetPieceSet(enemy, PieceType.Pawn) & pawnAttacks) != 0) return true;
-                if ((board.GetPieceSet(enemy, PieceType.Knight) & MovePackHelper.KnightAttacks[to]) != 0) return true;
-                if ((board.GetPieceSet(enemy, PieceType.King) & MovePackHelper.KingAttacks[to]) != 0) return true;
+                if ((board.GetPieceSet(enemyColor, PieceType.Pawn) & pawnAttacks) != 0) return true;
+                if ((board.GetPieceSet(enemyColor, PieceType.Knight) & MovePackHelper.KnightAttacks[to]) != 0) return true;
+                if ((board.GetPieceSet(enemyColor, PieceType.King) & MovePackHelper.KingAttacks[to]) != 0) return true;
 
                 // file / rank attacks
-                slidingAttackers = board.GetPieceSet(enemy, PieceType.Queen) | board.GetPieceSet(enemy, PieceType.Rook);
+                slidingAttackers = board.GetPieceSet(enemyColor, PieceType.Queen) | board.GetPieceSet(enemyColor, PieceType.Rook);
 
                 if (slidingAttackers != 0)
                 {
@@ -126,17 +126,14 @@ namespace BitBoard_based_Chess
                 }
 
                 // diagonals
-                slidingAttackers = board.GetPieceSet(enemy, PieceType.Queen) | board.GetPieceSet(enemy, PieceType.Bishop);
+                slidingAttackers = board.GetPieceSet(enemyColor, PieceType.Queen) | board.GetPieceSet(enemyColor, PieceType.Bishop);
 
                 if (slidingAttackers != 0)
                 {
                     if ((MovePackHelper.GetH1A8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0) return true;
                     if ((MovePackHelper.GetA1H8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0) return true;
                 }
-
-                target.value &= target.value - 1;
             }
-
             return false;
         }
     }

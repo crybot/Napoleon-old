@@ -30,7 +30,7 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static PieceColor GetOpposite(this PieceColor color)
+        internal static byte GetOpposite(this byte color)
         {
             return color == PieceColor.White ? PieceColor.Black : PieceColor.White;
         }

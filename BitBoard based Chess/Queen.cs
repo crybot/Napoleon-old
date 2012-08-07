@@ -8,7 +8,7 @@ namespace BitBoard_based_Chess
 {
     static class Queen
     {
-        internal static BitBoard GetAllTargets(PieceColor pieceColor, BitBoard queens, Board board)
+        internal static BitBoard GetAllTargets(byte pieceColor, BitBoard queens, Board board)
         {
             return Rook.GetAllTargets(pieceColor, queens, board) | Bishop.GetAllTargets(pieceColor, queens, board);
         }

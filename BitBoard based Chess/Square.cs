@@ -8,14 +8,16 @@ namespace BitBoard_based_Chess
 {
     internal struct Square
     {
-        private readonly int File;
-        private readonly int Rank;
+        internal readonly int File;
+        internal readonly int Rank;
+        internal readonly int SquareIndex;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Square(int file, int rank)
         {
             this.File = file;
             this.Rank = rank;
+            this.SquareIndex = GetSquareIndex(file, rank);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -23,6 +25,7 @@ namespace BitBoard_based_Chess
         {
             this.File = squareIndex % 8; // & 7
             this.Rank = squareIndex / 8; // >> 3
+            this.SquareIndex = squareIndex;
         }
 
         public static implicit operator Square(string str)
@@ -101,6 +104,15 @@ namespace BitBoard_based_Chess
         internal static int GetSquareIndex(int file, int rank)
         {
             return file + 8 * rank;
+        }
+
+        internal static int Parse(string square)
+        {
+            // converte la notazione algebrica (es. a1) in coordinate decimali
+            square = square.ToLower(); // converte la stringa in minuscolo
+            int x = (int)(square[0] - 'a');
+            int y = (int)(square[1] - '1');
+            return GetSquareIndex(x, y);
         }
 
         internal static string ToAlgebraic(int square)

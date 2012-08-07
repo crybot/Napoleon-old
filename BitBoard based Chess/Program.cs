@@ -15,22 +15,22 @@ namespace BitBoard_based_Chess
         static void Main(string[] args)
         {
             Board board = new Board();
-            board.Equip();
+            board.LoadGame("8/6bb/8/8/R1pP2k1/4P3/P7/K7 b - d3 0 1");
 
-            //BitBoard square;
-            //BitBoard targets = Constants.Empty;
+            //BitBoard pawns = board.GetPieceSet(PieceColor.White, PieceType.Pawn);
 
-            //for (int i = 0; i < 64; i++)
-            //{
-            //    square = BitBoard.SquareMask(i);
+            //BitBoard.Display(pawns);
+            //Console.ReadKey();
+            //Console.Clear();
 
-            //    if (board.isAttacked(square, PieceColor.Black))
-            //    {
-            //        targets |= square;
-            //    }
-            //}
+            //board.MakeMove(new Move(8, 16, PieceType.Pawn, PieceType.None, PieceType.None));
 
-            //BitBoard.Display(targets);
+            //pawns = board.GetPieceSet(PieceColor.White, PieceType.Pawn);
+
+            //BitBoard.Display(pawns);
+            //Console.ReadKey();
+            //Console.Clear();
+
             //Console.ReadKey();
 
             Console.Write("Tempo Impiegato: {0}", PerformanceTester.TestPerformance(() => { Test(board); }));
@@ -40,42 +40,41 @@ namespace BitBoard_based_Chess
 
         private static void Test(Board board)
         {
-            List<Move> moves = MoveGenerator.GetAllMoves(PieceColor.White, board);
+            MoveList moves = MoveGenerator.GetAllMoves(PieceColor.Black, board);
+
             short i, k, l, m, n, p;
 
-            //i = 0;
-            //foreach (Move move in moves)
-            //{
-            //    Console.WriteLine(move.ToAlgebraic());
-            //    i++;
-            //}
-            //Console.WriteLine(i);
-
-
-            for (i = 0; i < moves.Count; i++)
+            for (i = 0; i < moves.Lenght; i++)
             {
-                for (k = 0; k < moves.Count; k++)
-                {
-                    for (l = 0; l < moves.Count; l++)
-                    {
-                        for (m = 0; m < moves.Count; m++)
-                        {
-                            for (n = 0; n < moves.Count; n++)
-                            {
-                                MoveGenerator.GetAllMoves(PieceColor.White, board);
-                                for (p = 0; p < moves.Count; p++)
-                                {
-                                    //if (BitBoard.IsAttacked(square, PieceColor.Black, board))
-                                    //{
-
-                                    //}
-
-                                }
-                            }
-                        }
-                    }
-                }
+                Console.WriteLine(moves.moves[i].ToAlgebraic());
             }
+            Console.WriteLine(i);
+
+            //for (i = 0; i < moves.Lenght; i++)
+            //{
+            //    for (k = 0; k < moves.Lenght; k++)
+            //    {
+            //        for (l = 0; l < moves.Lenght; l++)
+            //        {
+            //            for (m = 0; m < moves.Lenght; m++)
+            //            {
+            //                for (n = 0; n < moves.Lenght; n++)
+            //                {
+            //                    MoveGenerator.GetAllMoves(PieceColor.White, board);
+
+            //                    for (p = 0; p < moves.Lenght; p++)
+            //                    {
+            //                        //if (BitBoard.IsAttacked(square, PieceColor.Black, board))
+            //                        //{
+
+            //                        //}
+
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
         }
     }
