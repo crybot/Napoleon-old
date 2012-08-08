@@ -25,7 +25,7 @@ namespace BitBoard_based_Chess
 
         private static void InitPawnAttacks()
         {
-            for (Int32 sq = 0; sq < 64; sq++)
+            for (int sq = 0; sq < 64; sq++)
             {
                 WhitePawnAttacks[sq] = CompassRose.OneStepNorthEast(Constants.SquareMask[sq]) | CompassRose.OneStepNorthWest(Constants.SquareMask[sq]);
                 BlackPawnAttacks[sq] = CompassRose.OneStepSouthEast(Constants.SquareMask[sq]) | CompassRose.OneStepSouthWest(Constants.SquareMask[sq]);
@@ -35,14 +35,14 @@ namespace BitBoard_based_Chess
         private static void InitKnightAttacks()
         {
             // inizializza l'array di mosse precalcolate
-            for (Int32 sq = 0; sq < 64; sq++)
+            for (int sq = 0; sq < 64; sq++)
             {
                 KnightAttacks[sq] = Knight.GetKnightAttacks(Constants.SquareMask[sq]);
             }
         }
         private static void InitKingAttacks()
         {
-            for (Int32 sq = 0; sq < 64; sq++)
+            for (int sq = 0; sq < 64; sq++)
             {
                 // inizializza l'array di mosse precalcolate
                 KingAttacks[sq] = King.GetKingAttacks(Constants.SquareMask[sq]);
@@ -50,22 +50,22 @@ namespace BitBoard_based_Chess
         }
         private static void InitRankAttacks()
         {
-            for (Int32 i = 0; i < 64; i++)
+            for (int i = 0; i < 64; i++)
             {
                 RankAttacks[i] = new UInt64[64];
             }
 
-            for (Int32 sq = 0; sq < 64; sq++)
+            for (int sq = 0; sq < 64; sq++)
             {
-                for (Int32 occ = 0; occ < 64; occ++)
+                for (int occ = 0; occ < 64; occ++)
                 {
-                    Int32 rank = Square.GetRankIndex(sq);
-                    Int32 file = Square.GetFileIndex(sq);
+                    int rank = Square.GetRankIndex(sq);
+                    int file = Square.GetFileIndex(sq);
 
                     UInt64 occupancy = BitBoard.ToBitBoard(occ << 1);
                     UInt64 targets = Constants.Empty;
 
-                    Int32 blocker = file + 1;
+                    int blocker = file + 1;
                     while (blocker <= 7)
                     {
                         targets |= Constants.SquareMask[blocker];
@@ -89,22 +89,22 @@ namespace BitBoard_based_Chess
         }
         private static void InitFileAttacks()
         {
-            for (Int32 i = 0; i < 64; i++)
+            for (int i = 0; i < 64; i++)
             {
                 FileAttacks[i] = new UInt64[64];
             }
 
-            for (Int32 sq = 0; sq < 64; sq++)
+            for (int sq = 0; sq < 64; sq++)
             {
-                for (Int32 occ = 0; occ < 64; occ++)
+                for (int occ = 0; occ < 64; occ++)
                 {
                     UInt64 targets = Constants.Empty;
                     UInt64 rankTargets = RankAttacks[7 - (sq / 8)][occ]; // converte la posizione reale in quella scalare RANK 
 
-                    for (Int32 bit = 0; bit < 8; bit++) // accede ai singoli bit della traversa (RANK)
+                    for (int bit = 0; bit < 8; bit++) // accede ai singoli bit della traversa (RANK)
                     {
-                        Int32 rank = 7 - bit;
-                        Int32 file = Square.GetFileIndex(sq);
+                        int rank = 7 - bit;
+                        int file = Square.GetFileIndex(sq);
 
                         if (BitBoard.IsBitSet(rankTargets, bit))
                         {
@@ -117,24 +117,24 @@ namespace BitBoard_based_Chess
         }
         private static void InitDiagonalAttacks()
         {
-            for (Int32 i = 0; i < 64; i++)
+            for (int i = 0; i < 64; i++)
             {
                 A1H8DiagonalAttacks[i] = new UInt64[64];
             }
 
-            for (Int32 sq = 0; sq < 64; sq++)
+            for (int sq = 0; sq < 64; sq++)
             {
-                for (Int32 occ = 0; occ < 64; occ++)
+                for (int occ = 0; occ < 64; occ++)
                 {
-                    Int32 diag = Square.GetRankIndex(sq) - Square.GetFileIndex(sq);
+                    int diag = Square.GetRankIndex(sq) - Square.GetFileIndex(sq);
                     UInt64 targets = Constants.Empty;
                     UInt64 rankTargets = diag > 0 ? RankAttacks[sq % 8][occ] : RankAttacks[sq / 8][occ];
                     // converte la posizione reale in quella scalare RANK //
 
-                    for (Int32 bit = 0; bit < 8; bit++) // accede ai singoli bit della traversa (RANK)
+                    for (int bit = 0; bit < 8; bit++) // accede ai singoli bit della traversa (RANK)
                     {
-                        Int32 rank;
-                        Int32 file;
+                        int rank;
+                        int file;
 
                         if (BitBoard.IsBitSet(rankTargets, bit))
                         {
@@ -161,25 +161,25 @@ namespace BitBoard_based_Chess
         }
         private static void InitAntiDiagonalAttacks()
         {
-            for (Int32 i = 0; i < 64; i++)
+            for (int i = 0; i < 64; i++)
             {
                 H1A8DiagonalAttacks[i] = new UInt64[64];
             }
 
-            for (Int32 sq = 0; sq < 64; sq++)
+            for (int sq = 0; sq < 64; sq++)
             {
-                for (Int32 occ = 0; occ < 64; occ++)
+                for (int occ = 0; occ < 64; occ++)
                 {
-                    Int32 diag = Square.GetH1A8AntiDiagonalIndex(sq);
+                    int diag = Square.GetH1A8AntiDiagonalIndex(sq);
 
                     UInt64 targets = Constants.Empty;
                     UInt64 rankTargets = diag > 7 ? RankAttacks[7 - sq / 8][occ] : RankAttacks[sq % 8][occ];
                     // converte la posizione reale in quella scalare RANK //
 
-                    for (Int32 bit = 0; bit < 8; bit++) // accede ai singoli bit della traversa (RANK)
+                    for (int bit = 0; bit < 8; bit++) // accede ai singoli bit della traversa (RANK)
                     {
-                        Int32 rank;
-                        Int32 file;
+                        int rank;
+                        int file;
 
                         if (BitBoard.IsBitSet(rankTargets, bit))
                         {
@@ -217,34 +217,34 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static UInt64 GetRankAttacks(BitBoard occupiedSquares, Int32 square)
+        internal static UInt64 GetRankAttacks(BitBoard occupiedSquares, int square)
         {
-            Int32 rank = Square.GetRankIndex(square);
-            Int32 occupancy = BitBoard.ToInt32((occupiedSquares & Constants.SixBitRankMask[rank]) >> (8 * rank));
+            int rank = Square.GetRankIndex(square);
+            int occupancy = BitBoard.ToInt32((occupiedSquares & Constants.SixBitRankMask[rank]) >> (8 * rank));
             return RankAttacks[square][(occupancy >> 1) & 63];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static UInt64 GetFileAttacks(BitBoard occupiedSquares, Int32 square)
+        internal static UInt64 GetFileAttacks(BitBoard occupiedSquares, int square)
         {
-            Int32 file = Square.GetFileIndex(square);
-            Int32 occupancy = BitBoard.ToInt32((occupiedSquares & Constants.SixBitFileMask[file]) * Constants.FileMagic[file] >> 56);
+            int file = Square.GetFileIndex(square);
+            int occupancy = BitBoard.ToInt32((occupiedSquares & Constants.SixBitFileMask[file]) * Constants.FileMagic[file] >> 56);
             return FileAttacks[square][(occupancy >> 1) & 63];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static UInt64 GetA1H8DiagonalAttacks(BitBoard occupiedSquares, Int32 square)
+        internal static UInt64 GetA1H8DiagonalAttacks(BitBoard occupiedSquares, int square)
         {
-            Int32 diag = Square.GetA1H8DiagonalIndex(square);
-            Int32 occupancy = BitBoard.ToInt32((occupiedSquares & Constants.A1H8DiagonalMask[diag]) * Constants.A1H8DiagonalMagic[diag] >> 56);
+            int diag = Square.GetA1H8DiagonalIndex(square);
+            int occupancy = BitBoard.ToInt32((occupiedSquares & Constants.A1H8DiagonalMask[diag]) * Constants.A1H8DiagonalMagic[diag] >> 56);
             return A1H8DiagonalAttacks[square][(occupancy >> 1) & 63];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static UInt64 GetH1A8DiagonalAttacks(BitBoard occupiedSquares, Int32 square)
+        internal static UInt64 GetH1A8DiagonalAttacks(BitBoard occupiedSquares, int square)
         {
-            Int32 diag = Square.GetH1A8AntiDiagonalIndex(square);
-            Int32 occupancy = BitBoard.ToInt32((occupiedSquares & Constants.H1A8DiagonalMask[diag]) * Constants.H1A8DiagonalMagic[diag] >> 56);
+            int diag = Square.GetH1A8AntiDiagonalIndex(square);
+            int occupancy = BitBoard.ToInt32((occupiedSquares & Constants.H1A8DiagonalMask[diag]) * Constants.H1A8DiagonalMagic[diag] >> 56);
             return H1A8DiagonalAttacks[square][(occupancy >> 1) & 63];
         }
     }

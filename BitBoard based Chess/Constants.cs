@@ -115,11 +115,11 @@ namespace BitBoard_based_Chess
         internal const UInt64 BlackCastleMaskOO = 0x6000000000000000;
         internal const UInt64 BlackCastleMaskOOO = 0x0E00000000000000;
 
-        internal static readonly Move WhiteShortCastling = new Move(4, 6, PieceType.King, PieceType.None, PieceType.Rook);
-        internal static readonly Move WhiteLongCastling = new Move(4, 2, PieceType.King, PieceType.None, PieceType.Rook);
+        internal static readonly Move WhiteCastlingOO = new Move(4, 6, PieceType.King, PieceType.None, PieceType.Rook);
+        internal static readonly Move WhiteCastlingOOO = new Move(4, 2, PieceType.King, PieceType.None, PieceType.Rook);
 
-        internal static readonly Move BlackShortCastling = new Move(60, 62, PieceType.King, PieceType.None, PieceType.Rook);
-        internal static readonly Move BlackLongCastling = new Move(60, 58, PieceType.King, PieceType.None, PieceType.Rook);
+        internal static readonly Move BlackCastlingOO = new Move(60, 62, PieceType.King, PieceType.None, PieceType.Rook);
+        internal static readonly Move BlackCastlingOOO = new Move(60, 58, PieceType.King, PieceType.None, PieceType.Rook);
 
         internal static class Squares
         {
@@ -236,10 +236,10 @@ namespace BitBoard_based_Chess
 
         }
 
-        internal const Int32 MaxMoves = 192;
+        internal const int MaxMoves = 192;
 
         internal const UInt64 DeBrujinValue = 0x07EDD5E59A4E28C2;
-        internal static readonly Int32[] DeBrujinTable =
+        internal static readonly int[] DeBrujinTable =
         {
             63,  0, 58,  1, 59, 47, 53,  2,
             60, 39, 48, 27, 54, 33, 42,  3,

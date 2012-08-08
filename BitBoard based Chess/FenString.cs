@@ -15,7 +15,7 @@ namespace BitBoard_based_Chess
         public bool CanWhiteLongCastle { get; set; }
         public bool CanBlackShortCastle { get; set; }
         public bool CanBlackLongCastle { get; set; }
-        public int? EnPassantSquare { get; set; }
+        public int EnPassantSquare { get; set; }
 
         public static implicit operator FenString(string str)
         {
@@ -51,10 +51,10 @@ namespace BitBoard_based_Chess
             string[] ranks = field.Split('/');
             PieceFactory factory = new PieceFactory();
 
-            for (Int32 i = 0; i < ranks.Length; i++)
+            for (int i = 0; i < ranks.Length; i++)
             {
-                Int32 empty = 0;
-                for (Int32 l = 0; l < ranks[i].Length; l++)
+                int empty = 0;
+                for (int l = 0; l < ranks[i].Length; l++)
                 {
                     #region pieceCreation
 
@@ -97,7 +97,7 @@ namespace BitBoard_based_Chess
                             this.PiecePlacement[Square.GetSquareIndex(l + empty, 7 - i)] = factory.Create(PieceType.King, PieceColor.Black);
                             break;
                         default:
-                            empty += (Int32)char.GetNumericValue(ranks[i][l]) - 1;
+                            empty += (int)char.GetNumericValue(ranks[i][l]) - 1;
                             break;
                     }
 
@@ -124,7 +124,7 @@ namespace BitBoard_based_Chess
             this.CanBlackShortCastle = false;
             this.CanBlackLongCastle = false;
 
-            for (Int32 i = 0; i < field.Length; i++)
+            for (int i = 0; i < field.Length; i++)
             {
                 switch (field[i])
                 {
@@ -148,7 +148,7 @@ namespace BitBoard_based_Chess
             if (field.Length == 1)
             {
                 if (field[0] == '-')
-                    this.EnPassantSquare = null;
+                    this.EnPassantSquare = Square.Invalid;
             }
             else
             {

@@ -13,16 +13,12 @@ namespace BitBoard_based_Chess
         {
             BitBoard occupiedSquares = board.OccupiedSquares;
             BitBoard targets = Constants.Empty;
-            Int32 square = 0;
+            int square = 0;
 
+            square = BitBoard.BitScanForward(rooks);
 
-            while (rooks != 0)
-            {
-                square = BitBoard.BitScanForwardReset(ref rooks);
-
-                targets |= MovePackHelper.GetRankAttacks(occupiedSquares, square);
-                targets |= MovePackHelper.GetFileAttacks(occupiedSquares, square);
-            }
+            targets |= MovePackHelper.GetRankAttacks(occupiedSquares, square);
+            targets |= MovePackHelper.GetFileAttacks(occupiedSquares, square);
 
             return targets & ~board.GetPlayerPieces(pieceColor);
 

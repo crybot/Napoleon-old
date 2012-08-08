@@ -15,12 +15,12 @@ namespace BitBoard_based_Chess
         internal bool BlackCanCastleOO;
         internal bool BlackCanCastleOOO;
 
-        internal int? EnPassantSquare;
+        internal int EnPassantSquare;
 
         internal byte SideToMove;
 
-        internal Piece[] pieceSet = new Piece[64];
-        internal readonly BitBoard[][] BitBoardSet = new BitBoard[2][];
+        internal readonly Piece[] pieceSet = new Piece[64];
+        private readonly BitBoard[][] BitBoardSet = new BitBoard[2][];
 
         internal BitBoard WhitePieces = Constants.Empty;
         internal BitBoard BlackPieces = Constants.Empty;
@@ -41,7 +41,7 @@ namespace BitBoard_based_Chess
             }
         }
 
-        internal void AddPiece(Piece piece, Int32 pos)
+        internal void AddPiece(Piece piece, int pos)
         {
             this.pieceSet[pos] = piece;
         }
@@ -189,7 +189,7 @@ namespace BitBoard_based_Chess
 
         private void InitializeEnPassantSquare()
         {
-            this.EnPassantSquare = null;
+            this.EnPassantSquare = Square.Invalid;
         }
 
         private void InitializeEnPassantSquare(FenString fenString)
@@ -199,7 +199,8 @@ namespace BitBoard_based_Chess
 
         private void InitializePieceSet()
         {
-            Board.ClearPieceSet(ref this.pieceSet);
+            this.ClearPieceSet();
+
             PieceFactory pieceFactory = new PieceFactory();
             /*PEDONI*/
             this.AddPiece(pieceFactory.Create(PieceType.Pawn, PieceColor.White), 8);
@@ -255,6 +256,11 @@ namespace BitBoard_based_Chess
         private void InitializePieceSet(FenString fenString)
         {
             fenString.PiecePlacement.CopyTo(this.pieceSet, 0);
+        }
+
+        private void ClearPieceSet()
+        {
+            Enumerable.Repeat<Piece>(new Piece(PieceColor.None, PieceType.None), 64).ToArray().CopyTo(this.pieceSet, 0);
         }
 
         internal static void ClearPieceSet(ref Piece[] set)

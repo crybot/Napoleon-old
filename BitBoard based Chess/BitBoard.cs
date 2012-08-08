@@ -26,30 +26,30 @@ namespace BitBoard_based_Chess
             return board.value;
         }
 
-        internal static BitBoard ToBitBoard(Int32 toConvert)
+        internal static BitBoard ToBitBoard(int toConvert)
         {
             return (UInt64)toConvert;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static Int32 ToInt32(BitBoard bitBoard)
+        internal static int ToInt32(BitBoard bitBoard)
         {
-            return (Int32)bitBoard.value;
+            return (int)bitBoard.value;
         }
 
-        internal static bool IsBitSet(BitBoard bitBoard, Int32 posBit)
+        internal static bool IsBitSet(BitBoard bitBoard, int posBit)
         {
             return (bitBoard & ((UInt64)1 << (posBit))) != 0;
         }
         internal static void Display(BitBoard bitBoard)
         {
-            for (Int32 r = 7; r >= 0; r--)
+            for (int r = 7; r >= 0; r--)
             {
                 Console.WriteLine("   ------------------------");
 
                 Console.Write(" {0} ", r + 1);
 
-                for (Int32 c = 0; c <= 7; c++)
+                for (int c = 0; c <= 7; c++)
                 {
                     Console.Write('[');
                     if (IsBitSet(bitBoard, Square.GetSquareIndex(c, r)))
@@ -72,23 +72,23 @@ namespace BitBoard_based_Chess
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static Int32 PopCount(BitBoard bitBoard)
+        internal static int PopCount(BitBoard bitBoard)
         {
             bitBoard.value -= ((bitBoard.value >> 1) & 0x5555555555555555UL);
             bitBoard.value = ((bitBoard.value >> 2) & 0x3333333333333333UL) + (bitBoard.value & 0x3333333333333333UL);
             bitBoard.value = ((bitBoard.value >> 4) + bitBoard.value) & 0x0F0F0F0F0F0F0F0FUL;
-            return (Int32)((bitBoard.value * 0x0101010101010101UL) >> 56);
+            return (int)((bitBoard.value * 0x0101010101010101UL) >> 56);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static Int32 BitScanForward(BitBoard bitBoard)
+        internal static int BitScanForward(BitBoard bitBoard)
         {
             Debug.Assert(bitBoard.value != 0);
 
             return Constants.DeBrujinTable[((ulong)((long)bitBoard.value & -(long)bitBoard.value) * Constants.DeBrujinValue) >> 58];
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static Int32 BitScanForwardReset(ref BitBoard bitBoard)
+        internal static int BitScanForwardReset(ref BitBoard bitBoard)
         {
             Debug.Assert(bitBoard.value != 0);
 
@@ -105,7 +105,7 @@ namespace BitBoard_based_Chess
             BitBoard pawnAttacks;
             BitBoard allPieces = board.OccupiedSquares;
             byte enemyColor = side.GetOpposite();
-            Int32 to;
+            int to;
 
             while (target != 0)
             {

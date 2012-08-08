@@ -11,11 +11,7 @@ namespace BitBoard_based_Chess
         {
             BitBoard targets = Constants.Empty;
 
-            while (knights != 0)
-            {
-                // accede all'array di mosse precalcolate cercando il primo bit attivo all'interno della bitboard
-                targets |= MovePackHelper.KnightAttacks[(BitBoard.BitScanForwardReset(ref knights))];
-            }
+            targets |= MovePackHelper.KnightAttacks[(BitBoard.BitScanForward(knights))];
 
             return targets & ~board.GetPlayerPieces(pieceColor);
         }

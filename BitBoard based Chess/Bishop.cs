@@ -13,15 +13,12 @@ namespace BitBoard_based_Chess
         {
             BitBoard occupiedSquares = board.OccupiedSquares;
             BitBoard targets = Constants.Empty;
-            Int32 square;
+            int square;
 
-            while (bishops != 0)
-            {
-                square = BitBoard.BitScanForwardReset(ref bishops);
+            square = BitBoard.BitScanForward(bishops);
 
-                targets |= MovePackHelper.GetA1H8DiagonalAttacks(occupiedSquares, square);
-                targets |= MovePackHelper.GetH1A8DiagonalAttacks(occupiedSquares, square);
-            }
+            targets |= MovePackHelper.GetA1H8DiagonalAttacks(occupiedSquares, square);
+            targets |= MovePackHelper.GetH1A8DiagonalAttacks(occupiedSquares, square);
 
             return targets & ~board.GetPlayerPieces(pieceColor);
         }

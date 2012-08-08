@@ -9,7 +9,7 @@ namespace BitBoard_based_Chess
     internal sealed class MoveList
     {
         internal readonly Move[] moves = new Move[Constants.MaxMoves + 2];
-        internal Int32 Lenght = 0;
+        internal int Lenght = 0;
 
         internal void Clear()
         {
@@ -59,7 +59,7 @@ namespace BitBoard_based_Chess
                 return false;
             }
         }
-        public override Int32 GetHashCode()
+        public override int GetHashCode()
         {
             return base.GetHashCode();
         }
@@ -110,9 +110,9 @@ namespace BitBoard_based_Chess
             else
             {
                 //algebraic.Append(this.PieceMoved.GetInitial());
-                algebraic.Append(Square.ToAlgebraic(this.FromSquare)); // TODO
+                algebraic.Append(Square.ToAlgebraic(this.FromSquare));
                 if (this.IsCapture()) algebraic.Append("x");
-                algebraic.Append(Square.ToAlgebraic(this.ToSquare)); // TODO
+                algebraic.Append(Square.ToAlgebraic(this.ToSquare));
                 if (this.IsPromotion()) algebraic.Append(this.PiecePromoted.GetInitial());
                 else if (this.IsEnPassant()) algebraic.Append("e.p.");
             }

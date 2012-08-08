@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace BitBoard_based_Chess
 {
-    
+
     internal static class MoveGenerator
     {
         private static readonly MoveList allMoves = new MoveList();
@@ -17,12 +17,12 @@ namespace BitBoard_based_Chess
         {
             allMoves.Clear();
 
-            GetPawnMoves(color, board.BitBoardSet[color][PieceType.Pawn], board, allMoves);
-            GetKnightMoves(color, board.BitBoardSet[color][PieceType.Knight], board, allMoves);
-            GetKingMoves(color, board.BitBoardSet[color][PieceType.King], board, allMoves);
-            GetBishopMoves(color, board.BitBoardSet[color][PieceType.Bishop], board, allMoves);
-            GetRookMoves(color, board.BitBoardSet[color][PieceType.Rook], board, allMoves);
-            GetQueenMoves(color, board.BitBoardSet[color][PieceType.Queen], board, allMoves);
+            GetPawnMoves(color, board.GetPieceSet(color, PieceType.Pawn), board, allMoves);
+            GetKnightMoves(color, board.GetPieceSet(color, PieceType.Knight), board, allMoves);
+            GetKingMoves(color, board.GetPieceSet(color, PieceType.King), board, allMoves);
+            GetBishopMoves(color, board.GetPieceSet(color, PieceType.Bishop), board, allMoves);
+            GetRookMoves(color, board.GetPieceSet(color, PieceType.Rook), board, allMoves);
+            GetQueenMoves(color, board.GetPieceSet(color, PieceType.Queen), board, allMoves);
             GetCastleMoves(color, board, allMoves);
 
             return allMoves;
@@ -32,7 +32,6 @@ namespace BitBoard_based_Chess
         {
             BitBoard targets;
             BitBoard epTargets;
-            byte epIndex;
             byte fromIndex;
             byte toIndex;
 
@@ -46,21 +45,16 @@ namespace BitBoard_based_Chess
                     toIndex = (byte)BitBoard.BitScanForwardReset(ref targets); // search for LS1B and then reset it
 
                     // en passant
-                    if (board.EnPassantSquare != null)
+                    if (board.EnPassantSquare != Square.Invalid)
                     {
                         epTargets = color == PieceColor.White ? MovePackHelper.WhitePawnAttacks[fromIndex] : MovePackHelper.BlackPawnAttacks[fromIndex];
 
-                        while (epTargets != 0)
-                        {
-                            epIndex = (byte)BitBoard.BitScanForwardReset(ref epTargets);
-
-                            if (epIndex == board.EnPassantSquare)
-                                moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, PieceType.Pawn, PieceType.Pawn);
-                        }
+                        if ((epTargets & Constants.SquareMask[board.EnPassantSquare]) != 0)
+                            moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, PieceType.Pawn, PieceType.Pawn);
                     }
 
                     // promotions
-                    if (Square.GetRankIndex(toIndex) == 7 && color == PieceColor.White || Square.GetRankIndex(toIndex) == 0 && color == PieceColor.Black) 
+                    if (Square.GetRankIndex(toIndex) == 7 && color == PieceColor.White || Square.GetRankIndex(toIndex) == 0 && color == PieceColor.Black)
                     {
                         moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Queen);
                         moveList.moves[moveList.Lenght++] = new Move(fromIndex, toIndex, PieceType.Pawn, board.pieceSet[toIndex].Type, PieceType.Rook);
@@ -170,31 +164,31 @@ namespace BitBoard_based_Chess
                 if (board.WhiteCanCastleOO)
                 {
                     if ((Constants.WhiteCastleMaskOO & board.OccupiedSquares) == 0)
-                        moveList.moves[moveList.Lenght++] = Constants.WhiteShortCastling;
+                        moveList.moves[moveList.Lenght++] = Constants.WhiteCastlingOO;
 
                 }
                 if (board.WhiteCanCastleOOO)
                 {
                     if ((Constants.WhiteCastleMaskOOO & board.OccupiedSquares) == 0)
-                        moveList.moves[moveList.Lenght++] = Constants.WhiteLongCastling;
+                        moveList.moves[moveList.Lenght++] = Constants.WhiteCastlingOOO;
                 }
-
             }
+
             else if (color == PieceColor.Black)
             {
                 if (board.BlackCanCastleOO)
                 {
                     if ((Constants.BlackCastleMaskOO & board.OccupiedSquares) == 0)
-                        moveList.moves[moveList.Lenght++] = Constants.BlackShortCastling;
+                        moveList.moves[moveList.Lenght++] = Constants.BlackCastlingOO;
                 }
                 if (board.BlackCanCastleOOO)
                 {
                     if ((Constants.BlackCastleMaskOOO & board.OccupiedSquares) == 0)
-                        moveList.moves[moveList.Lenght++] = Constants.BlackLongCastling;
+                        moveList.moves[moveList.Lenght++] = Constants.BlackCastlingOOO;
                 }
-
             }
         }
+
 
     }
 }

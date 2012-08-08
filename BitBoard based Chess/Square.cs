@@ -6,8 +6,10 @@ using System.Runtime.CompilerServices;
 
 namespace BitBoard_based_Chess
 {
+
     internal struct Square
     {
+        internal const int Invalid = -1;
         internal readonly int File;
         internal readonly int Rank;
         internal readonly int SquareIndex;
