@@ -17,7 +17,6 @@ namespace BitBoard_based_Chess
         internal static BitBoard GetAllTargets(byte color, BitBoard pawns, Board board)
         {
             BitBoard empty = board.EmptySquares;
-            BitBoard enemyPieces = board.GetEnemyPieces(color);
 
             return GetQuietTargets(color, pawns, empty) | GetAnyAttack(color, pawns, board);
         }
@@ -94,7 +93,7 @@ namespace BitBoard_based_Chess
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static BitBoard GetAnyAttack(byte color, BitBoard pawns, Board board)
         {
-            return (GetEastAttacks(color, pawns) | GetWestAttacks(color, pawns)) & board.GetEnemyPieces(color);
+            return (GetEastAttacks(color, pawns) | GetWestAttacks(color, pawns)) & board.GetEnemyPieces();
         }
     }
 }

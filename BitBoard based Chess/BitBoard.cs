@@ -97,44 +97,5 @@ namespace BitBoard_based_Chess
 
             return Constants.DeBrujinTable[((ulong)((long)bb & -(long)bb) * Constants.DeBrujinValue) >> 58];
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsAttacked(BitBoard target, byte side, Board board)
-        {
-            BitBoard slidingAttackers;
-            BitBoard pawnAttacks;
-            BitBoard allPieces = board.OccupiedSquares;
-            byte enemyColor = side.GetOpposite();
-            int to;
-
-            while (target != 0)
-            {
-                to = BitBoard.BitScanForwardReset(ref target);
-                pawnAttacks = side == PieceColor.White ? MovePackHelper.WhitePawnAttacks[to] : MovePackHelper.BlackPawnAttacks[to];
-
-                if ((board.GetPieceSet(enemyColor, PieceType.Pawn) & pawnAttacks) != 0) return true;
-                if ((board.GetPieceSet(enemyColor, PieceType.Knight) & MovePackHelper.KnightAttacks[to]) != 0) return true;
-                if ((board.GetPieceSet(enemyColor, PieceType.King) & MovePackHelper.KingAttacks[to]) != 0) return true;
-
-                // file / rank attacks
-                slidingAttackers = board.GetPieceSet(enemyColor, PieceType.Queen) | board.GetPieceSet(enemyColor, PieceType.Rook);
-
-                if (slidingAttackers != 0)
-                {
-                    if ((MovePackHelper.GetRankAttacks(allPieces, to) & slidingAttackers) != 0) return true;
-                    if ((MovePackHelper.GetFileAttacks(allPieces, to) & slidingAttackers) != 0) return true;
-                }
-
-                // diagonals
-                slidingAttackers = board.GetPieceSet(enemyColor, PieceType.Queen) | board.GetPieceSet(enemyColor, PieceType.Bishop);
-
-                if (slidingAttackers != 0)
-                {
-                    if ((MovePackHelper.GetH1A8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0) return true;
-                    if ((MovePackHelper.GetA1H8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0) return true;
-                }
-            }
-            return false;
-        }
     }
 }

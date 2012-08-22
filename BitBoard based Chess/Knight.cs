@@ -9,11 +9,9 @@ namespace BitBoard_based_Chess
     {
         internal static BitBoard GetAllTargets(byte pieceColor, BitBoard knights, Board board)
         {
-            BitBoard targets = Constants.Empty;
+            BitBoard targets = MovePackHelper.KnightAttacks[(BitBoard.BitScanForward(knights))];
 
-            targets |= MovePackHelper.KnightAttacks[(BitBoard.BitScanForward(knights))];
-
-            return targets & ~board.GetPlayerPieces(pieceColor);
+            return targets & ~board.GetPlayerPieces();
         }
 
         internal static BitBoard GetKnightAttacks(BitBoard knights)

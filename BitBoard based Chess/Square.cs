@@ -7,63 +7,63 @@ using System.Runtime.CompilerServices;
 namespace BitBoard_based_Chess
 {
 
-    internal struct Square
+    internal static class Square
     {
         internal const int Invalid = -1;
-        internal readonly int File;
-        internal readonly int Rank;
-        internal readonly int SquareIndex;
+        //internal readonly int File;
+        //internal readonly int Rank;
+        //internal readonly int SquareIndex;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal Square(int file, int rank)
-        {
-            this.File = file;
-            this.Rank = rank;
-            this.SquareIndex = GetSquareIndex(file, rank);
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //internal Square(int file, int rank)
+        //{
+        //    this.File = file;
+        //    this.Rank = rank;
+        //    this.SquareIndex = GetSquareIndex(file, rank);
+        //}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal Square(int squareIndex)
-        {
-            this.File = squareIndex % 8; // & 7
-            this.Rank = squareIndex / 8; // >> 3
-            this.SquareIndex = squareIndex;
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //internal Square(int squareIndex)
+        //{
+        //    this.File = squareIndex % 8; // & 7
+        //    this.Rank = squareIndex / 8; // >> 3
+        //    this.SquareIndex = squareIndex;
+        //}
 
-        public static implicit operator Square(string str)
-        {
-            // converte la notazione algebrica (es. a1) in coordinate decimali
-            str = str.ToLower(); // converte la stringa in minuscolo
-            int x = (int)(str[0] - 'a');
-            int y = (int)(str[1] - '1');
+        //public static implicit operator Square(string str)
+        //{
+        //    // converte la notazione algebrica (es. a1) in coordinate decimali
+        //    str = str.ToLower(); // converte la stringa in minuscolo
+        //    int x = (int)(str[0] - 'a');
+        //    int y = (int)(str[1] - '1');
 
-            return new Square(x, y);
-        }
-        public static bool operator ==(Square a, Square b)
-        {
-            return a.Equals(b);
-        }
-        public static bool operator !=(Square a, Square b)
-        {
-            return !(a == b);
-        }
+        //    return new Square(x, y);
+        //}
+        //public static bool operator ==(Square a, Square b)
+        //{
+        //    return a.Equals(b);
+        //}
+        //public static bool operator !=(Square a, Square b)
+        //{
+        //    return !(a == b);
+        //}
 
-        public override bool Equals(object other)
-        {
-            if (other is Move)
-            {
-                Square compare = (Square)other;
-                return (this.File == compare.File && this.Rank == compare.Rank);
-            }
-            else
-            {
-                return false;
-            }
-        }
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        //public override bool Equals(object other)
+        //{
+        //    if (other is Move)
+        //    {
+        //        Square compare = (Square)other;
+        //        return (this.File == compare.File && this.Rank == compare.Rank);
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
+        //public override int GetHashCode()
+        //{
+        //    return base.GetHashCode();
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetA1H8DiagonalIndex(int file, int rank)

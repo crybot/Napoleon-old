@@ -6,21 +6,6 @@ using System.Runtime.CompilerServices;
 
 namespace BitBoard_based_Chess
 {
-    internal sealed class MoveList
-    {
-        internal readonly Move[] moves = new Move[Constants.MaxMoves + 2];
-        internal int Lenght = 0;
-
-        internal void Clear()
-        {
-            if (this.Lenght != 0)
-            {
-                Array.Clear(moves, 0, this.Lenght);
-                this.Lenght = 0;
-            }
-        }
-    }
-
     internal struct Move
     {
         internal readonly byte FromSquare;

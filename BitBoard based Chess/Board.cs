@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace BitBoard_based_Chess
 {
@@ -19,8 +20,9 @@ namespace BitBoard_based_Chess
 
         internal byte SideToMove;
 
+        private readonly int[] kingSquare = new int[2]; // by color
         internal readonly Piece[] pieceSet = new Piece[64];
-        private readonly BitBoard[][] BitBoardSet = new BitBoard[2][];
+        private readonly BitBoard[][] bitBoardSet = new BitBoard[2][];
 
         internal BitBoard WhitePieces = Constants.Empty;
         internal BitBoard BlackPieces = Constants.Empty;
@@ -31,13 +33,13 @@ namespace BitBoard_based_Chess
         {
             MovePackHelper.InitAttacks(); //inizializza i vari array di attacchi precalcolati per la generazione delle mosse
 
-            this.BitBoardSet[0] = new BitBoard[6];
-            this.BitBoardSet[1] = new BitBoard[6];
+            this.bitBoardSet[0] = new BitBoard[6];
+            this.bitBoardSet[1] = new BitBoard[6];
 
             for (int i = 0; i < 6; i++)
             {
-                this.BitBoardSet[PieceColor.White][i] = Constants.Empty;
-                this.BitBoardSet[PieceColor.Black][i] = Constants.Empty;
+                this.bitBoardSet[PieceColor.White][i] = Constants.Empty;
+                this.bitBoardSet[PieceColor.Black][i] = Constants.Empty;
             }
         }
 
@@ -52,25 +54,93 @@ namespace BitBoard_based_Chess
             ///TODO
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void MakeMove(Move move)
         {
-            //this.pieceSet[move.ToSquare] = this.pieceSet[move.FromSquare]; // muove il pezzo
-            //this.pieceSet[move.ToSquare] = new Piece(PieceColor.None, PieceType.None); // svuota la casella di partenza
+            //ARRAY
+            this.pieceSet[move.ToSquare] = this.pieceSet[move.FromSquare]; // muove il pezzo
+            this.pieceSet[move.FromSquare] = new Piece(PieceColor.None, PieceType.None); // svuota la casella di partenza
 
-            //switch (this.SideToMove)
-            //{
-            //    case PieceColor.White:
-            //        {
-            //            this.whiteBitBoardSet[move.PieceMoved] ^= Constants.SquareMask[move.ToSquare] | Constants.SquareMask[move.FromSquare];
-            //            break;
-            //        }
-            //    case PieceColor.Black:
-            //        {
-            //            this.blackBitBoardSet[move.PieceMoved] ^= Constants.SquareMask[move.ToSquare] | Constants.SquareMask[move.FromSquare];
-            //            break;
-            //        }
-            //}
+            //BITBOARDS
+            BitBoard From = Constants.SquareMask[move.FromSquare];
+            BitBoard To = Constants.SquareMask[move.ToSquare];
+            BitBoard FromTo = From | To;
 
+
+            this.bitBoardSet[this.SideToMove][move.PieceMoved] ^= FromTo;
+            if (this.SideToMove == PieceColor.White)
+                this.WhitePieces ^= FromTo;
+            else
+                this.BlackPieces ^= FromTo;
+
+            if (move.PieceMoved == PieceType.King)
+                this.kingSquare[this.SideToMove] = move.ToSquare;
+
+            if (move.IsCapture())
+            {
+                this.bitBoardSet[this.SideToMove.GetOpposite()][move.PieceCaptured] ^= To;
+
+                //aggiorna i pezzi dell'avversario
+                if (this.SideToMove == PieceColor.White)
+                    this.BlackPieces ^= To;
+                else
+                    this.WhitePieces ^= To;
+
+                this.OccupiedSquares ^= From;
+                this.EmptySquares ^= From;
+            }
+            else
+            {
+                this.OccupiedSquares ^= FromTo;
+                this.EmptySquares ^= FromTo;
+            }
+
+            this.SideToMove = this.SideToMove.GetOpposite();
+
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void UndoMove(Move move)
+        {
+            //ARRAY
+            this.pieceSet[move.FromSquare] = this.pieceSet[move.ToSquare]; // muove il pezzo
+            this.pieceSet[move.ToSquare] = move.IsCapture() ? new Piece(SideToMove, move.PieceCaptured) : new Piece(PieceColor.None, PieceType.None); // svuota o riempie la casella di partenza 
+
+            //BITBOARDS
+            BitBoard From = Constants.SquareMask[move.FromSquare];
+            BitBoard To = Constants.SquareMask[move.ToSquare];
+            BitBoard FromTo = From | To;
+
+            this.SideToMove = this.SideToMove.GetOpposite();
+
+            // aggiorna la bitboard
+            this.bitBoardSet[this.SideToMove][move.PieceMoved] ^= FromTo;
+            if (this.SideToMove == PieceColor.White)
+                this.WhitePieces ^= FromTo;
+            else
+                this.BlackPieces ^= FromTo;
+
+            if (move.PieceMoved == PieceType.King)
+                this.kingSquare[this.SideToMove] = move.FromSquare;
+
+            if (move.IsCapture())
+            {
+                this.bitBoardSet[this.SideToMove.GetOpposite()][move.PieceCaptured] ^= To;
+
+                //aggiorna i pezzi dell'avversario
+                if (this.SideToMove == PieceColor.White)
+                    this.BlackPieces ^= To;
+                else
+                    this.WhitePieces ^= To;
+
+                this.OccupiedSquares ^= From;
+                this.EmptySquares ^= From;
+            }
+            else
+            {
+                this.OccupiedSquares ^= FromTo;
+                this.EmptySquares ^= FromTo;
+            }
         }
 
         internal void Equip()
@@ -97,68 +167,175 @@ namespace BitBoard_based_Chess
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal BitBoard GetPieceSet(byte pieceColor, byte pieceType)
         {
-            return this.BitBoardSet[pieceColor][pieceType];
+            return this.bitBoardSet[pieceColor][pieceType];
             //return pieceColor == PieceColor.White ? whiteBitBoardSet[pieceType] : blackBitBoardSet[pieceType];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal BitBoard GetPlayerPieces(byte color)
+        internal BitBoard GetPlayerPieces()
         {
-            return color == PieceColor.White ? this.WhitePieces : this.BlackPieces;
+            return SideToMove == PieceColor.White ? this.WhitePieces : this.BlackPieces;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal BitBoard GetEnemyPieces(byte color)
+        internal BitBoard GetEnemyPieces()
         {
-            return color == PieceColor.White ? this.BlackPieces : this.WhitePieces;
+            return SideToMove == PieceColor.White ? this.BlackPieces : this.WhitePieces;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal BitBoard GetPinnedPieces()
+        {
+            byte enemy = this.SideToMove.GetOpposite();
+            int kingSq = this.kingSquare[this.SideToMove];
+
+            BitBoard playerPieces = this.GetPlayerPieces();
+            BitBoard b;
+            BitBoard pinned = 0;
+            BitBoard pinners = ((this.bitBoardSet[enemy][PieceType.Rook] | this.bitBoardSet[enemy][PieceType.Queen]) & MovePackHelper.PseudoRookAttacks[kingSq])
+                | ((this.bitBoardSet[enemy][PieceType.Bishop] | this.bitBoardSet[enemy][PieceType.Queen]) & MovePackHelper.PseudoBishopAttacks[kingSq]);
+
+            while (pinners != 0)
+            {
+                b = MovePackHelper.InBetween[BitBoard.BitScanForwardReset(ref pinners)][kingSq] & this.OccupiedSquares;
+
+                if ((b != 0) && ((b & (b - 1)) == 0) && ((b & playerPieces) != 0))
+                {
+                    pinned |= b;
+                }
+            }
+
+            return pinned;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal bool IsMoveLegal(Move move, BitBoard pinned)
+        {
+            if (move.PieceMoved == PieceType.King)
+                return !this.IsAttacked(Constants.SquareMask[move.ToSquare], this.SideToMove);
+
+            if (this.IsAttacked(this.bitBoardSet[SideToMove][PieceType.King], this.SideToMove))
+            {
+                bool islegal = true;
+                this.MakeMove(move);
+                islegal = !this.IsAttacked(this.bitBoardSet[SideToMove.GetOpposite()][PieceType.King], this.SideToMove.GetOpposite());
+                this.UndoMove(move);
+
+                return islegal;
+            }
+
+            return (pinned == 0) || ((pinned & Constants.SquareMask[move.FromSquare]) == 0)
+                || MovePackHelper.AreSquareAligned(move.FromSquare, move.ToSquare, this.kingSquare[this.SideToMove]);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal bool IsAttacked(BitBoard target, byte side)
+        {
+            BitBoard slidingAttackers;
+            BitBoard pawnAttacks;
+            BitBoard allPieces = this.OccupiedSquares;
+            byte enemyColor = side.GetOpposite();
+            int to;
+
+            while (target != 0)
+            {
+                to = BitBoard.BitScanForwardReset(ref target);
+                pawnAttacks = side == PieceColor.White ? MovePackHelper.WhitePawnAttacks[to] : MovePackHelper.BlackPawnAttacks[to];
+
+                if ((this.GetPieceSet(enemyColor, PieceType.Pawn) & pawnAttacks) != 0) return true;
+                if ((this.GetPieceSet(enemyColor, PieceType.Knight) & MovePackHelper.KnightAttacks[to]) != 0) return true;
+                if ((this.GetPieceSet(enemyColor, PieceType.King) & MovePackHelper.KingAttacks[to]) != 0) return true;
+
+                // file / rank attacks
+                slidingAttackers = this.GetPieceSet(enemyColor, PieceType.Queen) | this.GetPieceSet(enemyColor, PieceType.Rook);
+
+                if (slidingAttackers != 0)
+                {
+                    if ((MovePackHelper.GetRankAttacks(allPieces, to) & slidingAttackers) != 0) return true;
+                    if ((MovePackHelper.GetFileAttacks(allPieces, to) & slidingAttackers) != 0) return true;
+                }
+
+                // diagonals
+                slidingAttackers = this.GetPieceSet(enemyColor, PieceType.Queen) | this.GetPieceSet(enemyColor, PieceType.Bishop);
+
+                if (slidingAttackers != 0)
+                {
+                    if ((MovePackHelper.GetH1A8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0) return true;
+                    if ((MovePackHelper.GetA1H8DiagonalAttacks(allPieces, to) & slidingAttackers) != 0) return true;
+                }
+            }
+            return false;
+        }
+
+        internal void Display()
+        {
+            Piece piece;
+
+            for (int r = 7; r >= 0; r--)
+            {
+                Console.WriteLine("   ------------------------");
+
+                Console.Write(" {0} ", r + 1);
+
+                for (int c = 0; c <= 7; c++)
+                {
+                    piece = this.pieceSet[Square.GetSquareIndex(c, r)];
+                    Console.Write('[');
+                    if (piece.Type != PieceType.None)
+                    {
+                        Console.ForegroundColor = piece.Color == PieceColor.White ? ConsoleColor.Green : ConsoleColor.DarkRed;
+                        Console.Write(this.pieceSet[Square.GetSquareIndex(c, r)].Type.GetInitial());
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.Write(' ');
+                    }
+
+                    Console.ResetColor();
+                    Console.Write(']');
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine("\n    A  B  C  D  E  F  G  H");
+        }
+
 
         // INITIALIZE
 
         private void InitializeBitBoards()
         {
-            this.BitBoardSet[PieceColor.White][PieceType.Pawn] = Constants.InitialPositions.WhitePawns;
-            this.BitBoardSet[PieceColor.White][PieceType.Knight] = Constants.InitialPositions.WhiteKnights;
-            this.BitBoardSet[PieceColor.White][PieceType.Bishop] = Constants.InitialPositions.WhiteBishops;
-            this.BitBoardSet[PieceColor.White][PieceType.Rook] = Constants.InitialPositions.WhiteRooks;
-            this.BitBoardSet[PieceColor.White][PieceType.Queen] = Constants.InitialPositions.WhiteQueen;
-            this.BitBoardSet[PieceColor.White][PieceType.King] = Constants.InitialPositions.WhiteKing;
+            this.kingSquare[PieceColor.White] = 4;
+            this.kingSquare[PieceColor.Black] = 60;
 
-            this.BitBoardSet[PieceColor.Black][PieceType.Pawn] = Constants.InitialPositions.BlackPawns;
-            this.BitBoardSet[PieceColor.Black][PieceType.Knight] = Constants.InitialPositions.BlackKnights;
-            this.BitBoardSet[PieceColor.Black][PieceType.Bishop] = Constants.InitialPositions.BlackBishops;
-            this.BitBoardSet[PieceColor.Black][PieceType.Rook] = Constants.InitialPositions.BlackRooks;
-            this.BitBoardSet[PieceColor.Black][PieceType.Queen] = Constants.InitialPositions.BlackQueen;
-            this.BitBoardSet[PieceColor.Black][PieceType.King] = Constants.InitialPositions.BlackKing;
+            this.bitBoardSet[PieceColor.White][PieceType.Pawn] = Constants.InitialPositions.WhitePawns;
+            this.bitBoardSet[PieceColor.White][PieceType.Knight] = Constants.InitialPositions.WhiteKnights;
+            this.bitBoardSet[PieceColor.White][PieceType.Bishop] = Constants.InitialPositions.WhiteBishops;
+            this.bitBoardSet[PieceColor.White][PieceType.Rook] = Constants.InitialPositions.WhiteRooks;
+            this.bitBoardSet[PieceColor.White][PieceType.Queen] = Constants.InitialPositions.WhiteQueen;
+            this.bitBoardSet[PieceColor.White][PieceType.King] = Constants.InitialPositions.WhiteKing;
 
-            this.InitializeGenericBitBoards();
+            this.bitBoardSet[PieceColor.Black][PieceType.Pawn] = Constants.InitialPositions.BlackPawns;
+            this.bitBoardSet[PieceColor.Black][PieceType.Knight] = Constants.InitialPositions.BlackKnights;
+            this.bitBoardSet[PieceColor.Black][PieceType.Bishop] = Constants.InitialPositions.BlackBishops;
+            this.bitBoardSet[PieceColor.Black][PieceType.Rook] = Constants.InitialPositions.BlackRooks;
+            this.bitBoardSet[PieceColor.Black][PieceType.Queen] = Constants.InitialPositions.BlackQueen;
+            this.bitBoardSet[PieceColor.Black][PieceType.King] = Constants.InitialPositions.BlackKing;
+
+            this.UpdateGenericBitBoards();
         }
 
         private void InitializeBitBoards(FenString fenString)
         {
             for (int i = 0; i < fenString.PiecePlacement.Length; i++)
             {
+                if (fenString.PiecePlacement[i].Type == PieceType.King)
+                    this.kingSquare[fenString.PiecePlacement[i].Color] = i;
                 if (fenString.PiecePlacement[i].Color != PieceColor.None)
-                    this.BitBoardSet[fenString.PiecePlacement[i].Color][fenString.PiecePlacement[i].Type] |= Constants.SquareMask[i];
+                    this.bitBoardSet[fenString.PiecePlacement[i].Color][fenString.PiecePlacement[i].Type] |= Constants.SquareMask[i];
             }
 
-            this.InitializeGenericBitBoards();
-        }
-
-        private void InitializeGenericBitBoards()
-        {
-            this.WhitePieces =
-                  this.BitBoardSet[PieceColor.White][PieceType.Pawn] | this.BitBoardSet[PieceColor.White][PieceType.Knight]
-                | this.BitBoardSet[PieceColor.White][PieceType.Bishop] | this.BitBoardSet[PieceColor.White][PieceType.Rook]
-                | this.BitBoardSet[PieceColor.White][PieceType.Queen] | this.BitBoardSet[PieceColor.White][PieceType.King];
-
-            this.BlackPieces =
-                  this.BitBoardSet[PieceColor.Black][PieceType.Pawn] | this.BitBoardSet[PieceColor.Black][PieceType.Knight]
-                | this.BitBoardSet[PieceColor.Black][PieceType.Bishop] | this.BitBoardSet[PieceColor.Black][PieceType.Rook]
-                | this.BitBoardSet[PieceColor.Black][PieceType.Queen] | this.BitBoardSet[PieceColor.Black][PieceType.King];
-
-            this.OccupiedSquares = WhitePieces | BlackPieces;
-            this.EmptySquares = ~OccupiedSquares;
+            this.UpdateGenericBitBoards();
         }
 
         private void InitializeSideToMove()
@@ -261,6 +438,22 @@ namespace BitBoard_based_Chess
         private void ClearPieceSet()
         {
             Enumerable.Repeat<Piece>(new Piece(PieceColor.None, PieceType.None), 64).ToArray().CopyTo(this.pieceSet, 0);
+        }
+
+        private void UpdateGenericBitBoards()
+        {
+            this.WhitePieces =
+                  this.bitBoardSet[PieceColor.White][PieceType.Pawn] | this.bitBoardSet[PieceColor.White][PieceType.Knight]
+                | this.bitBoardSet[PieceColor.White][PieceType.Bishop] | this.bitBoardSet[PieceColor.White][PieceType.Rook]
+                | this.bitBoardSet[PieceColor.White][PieceType.Queen] | this.bitBoardSet[PieceColor.White][PieceType.King];
+
+            this.BlackPieces =
+                  this.bitBoardSet[PieceColor.Black][PieceType.Pawn] | this.bitBoardSet[PieceColor.Black][PieceType.Knight]
+                | this.bitBoardSet[PieceColor.Black][PieceType.Bishop] | this.bitBoardSet[PieceColor.Black][PieceType.Rook]
+                | this.bitBoardSet[PieceColor.Black][PieceType.Queen] | this.bitBoardSet[PieceColor.Black][PieceType.King];
+
+            this.OccupiedSquares = WhitePieces | BlackPieces;
+            this.EmptySquares = ~OccupiedSquares;
         }
 
         internal static void ClearPieceSet(ref Piece[] set)
